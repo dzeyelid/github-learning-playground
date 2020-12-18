@@ -1,0 +1,14 @@
+name: Release trigger
+
+on:
+  release:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show event
+        run: |
+          echo $EVENT | jq
+        env:
+          EVENT: ${{ toJson(github.event) }}
