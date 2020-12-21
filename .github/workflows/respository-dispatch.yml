@@ -25,7 +25,7 @@ jobs:
             const ownerAndRepoName = context.payload.repository.full_name.split('/');
             const owner = ownerAndRepoName[0];
             const repo = ownerAndRepoName[1];
-            const res = github.repos.getLatestRelease({
+            const res = await github.repos.getLatestRelease({
               owner,
               repo,
             });
