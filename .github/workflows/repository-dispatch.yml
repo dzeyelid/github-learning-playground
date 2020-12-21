@@ -136,7 +136,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const script = require(`${process.env.GITHUB_WORKSPACE}/.github/workflows/run-generate-workflow.js`)
+            const script = require('./.github/workflows/run-generate-workflow.js');
             console.log(script({github, context}));
         env:
           NEXT_VERSION: ${{ needs.next_release_version.outputs.NEXT_VERSION }}
