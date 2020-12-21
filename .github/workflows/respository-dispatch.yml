@@ -40,5 +40,5 @@ jobs:
         if: ${{ steps.get-latest-release.outputs.result }}
         uses: christian-draeger/increment-semantic-version@1.0.2
         with:
-          current-version: ${{ steps.get-latest-release.outputs.result.tag_name }}
+          current-version: ${{ steps.get-latest-release.outputs.result.data.tag_name }}
           version-fragment: 'feature'
