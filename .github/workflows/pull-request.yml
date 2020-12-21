@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Show context
         run: |
-          echo ${{ CONTEXT }} | jq
+          echo $CONTEXT | jq
         env:
           CONTEXT: ${{ toJson(github) }}
+
+      - uses: actions/checkout@v2
