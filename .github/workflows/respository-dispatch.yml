@@ -25,10 +25,10 @@ jobs:
             const ownerAndRepoName = context.payload.repository.full_name.split('/');
             console.log(ownerAndRepoName);
             const owner = ownerAndRepoName[0];
-            const repositoryName = ownerAndRepoName[1];
+            const repo = ownerAndRepoName[1];
             return github.repos.getLatestRelease({
               owner,
-              repositoryName
+              repo,
             });
 
       - name: Show latest release
