@@ -115,13 +115,15 @@ jobs:
             const inputs = {
               target_version: process.env.NEXT_VERSION
             };
-            const res = await github.actions.createWorkflowDispatch({
+            const params = {
               owner,
               repo,
               workflow_id,
               ref,
               inputs,
-            });
+            };
+            console.log(params);
+            const res = await github.actions.createWorkflowDispatch(params);
             console.log(res);
         env:
           NEXT_VERSION: ${{ needs.next_release_version.outputs.NEXT_VERSION }}
