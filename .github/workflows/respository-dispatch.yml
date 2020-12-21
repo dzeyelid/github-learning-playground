@@ -107,7 +107,6 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           result-encoding: string
           script: |
-            console.log(context);
             const { ref, payload } = context;
             const ownerAndRepoName = payload.repository.full_name.split('/');
             const owner = ownerAndRepoName[0];
@@ -123,5 +122,6 @@ jobs:
               ref,
               inputs,
             });
+            console.log(res);
         env:
           NEXT_VERSION: ${{ needs.next_release_version.outputs.NEXT_VERSION }}
