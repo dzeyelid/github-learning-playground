@@ -127,12 +127,25 @@ jobs:
             console.log(params);
             //const res = await github.actions.createWorkflowDispatch(params);
             //const res = await github.request("POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches", params);
-            const res = await github.request("POST /repos/dzeyelid/github-actions-playground/actions/workflows/generate.yml/dispatches", {
-              data: {
-                ref,
-                inputs,
+            const headers = new Headers();
+            headers.append('Accept', 'application/vnd.github.v3+json');
+            headers.append('Authorization', `token ${process.env.GITHUB_TOKEN}`);
+            const request = new Request(
+              'https://api.github.com/repos/dzeyelid/github-actions-playground/actions/workflows/generate.yml/dispatches',
+              {
+                method: 'POST',
+                headers: heders,
+                body: JSON.stringify({ref, inputs}),
               }
-            });
-            console.log(res);
+            );
+            fetch(request)
+              .then((res) => {console.log(res)});
+            //const res = await github.request("POST /repos/dzeyelid/github-actions-playground/actions/workflows/generate.yml/dispatches", {
+            //  data: {
+            //    ref,
+            //    inputs,
+            //  }
+            //});
+            //console.log(res);
         env:
           NEXT_VERSION: ${{ needs.next_release_version.outputs.NEXT_VERSION }}
