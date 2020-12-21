@@ -15,15 +15,14 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
 
+      # If no release yet, this step fails as "HttpError: Not Found"
       - name: Get latest release
         id: get-latest-release
         uses: actions/github-script@v3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            console.log(context.payload.repository.full_name);
             const ownerAndRepoName = context.payload.repository.full_name.split('/');
-            console.log(ownerAndRepoName);
             const owner = ownerAndRepoName[0];
             const repo = ownerAndRepoName[1];
             return github.repos.getLatestRelease({
@@ -35,7 +34,7 @@ jobs:
         run: |
           echo $RESULT | jq
         env:
-          RESULT: ${{ toJson(steps.get-latest-release.outputs.result) }}
+          RESULT: ${{ fromJson(steps.get-latest-release.outputs.result) }}
 
       - name: Create new release
         if: ${{ steps.get-latest-release.outputs.result }}
