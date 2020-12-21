@@ -1,0 +1,26 @@
+name: Receive repository dispatch event
+
+on:
+  repository_dispatch:
+    types:
+      - create-pull-request
+
+jobs:
+  create-pull-request:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show github context
+        run: |
+          echo $GITHUB_CONTEXT | jq
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+
+      # - name: Get latest release
+      #   uses: actions/github-script@v3
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     script: |
+      #       github.repos.getLatestRlease({
+      #         github.context.owner,
+      #         github.contect.repository_name
+      #       })
