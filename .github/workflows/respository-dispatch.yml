@@ -48,6 +48,7 @@ jobs:
         run: |
           echo ${{ steps.next-release-version.outputs.next-version }}
 
+      - uses: actions/checkout@v2
       - name: Create pull request
         uses: peter-evans/create-pull-request@v3
         with:
