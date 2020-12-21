@@ -21,10 +21,10 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            return github.repos.getLatestRlease({
+            return github.repos.getLatestRelease({
               context.repository_owner,
               context.event.repository.name
-            })
+            });
 
       - name: Show latest release
         run: |
