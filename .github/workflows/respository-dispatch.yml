@@ -24,7 +24,6 @@ jobs:
             const ownerAndRepoName = context.payload.repository.full_name.split('/');
             const owner = ownerAndRepoName[0];
             const repositoryName = ownerAndRepoName[1];
-            console.log(repository_name)
             return github.repos.getLatestRelease({
               owner,
               repositoryName
