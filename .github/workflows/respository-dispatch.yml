@@ -21,14 +21,13 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            console.log(context);
-            const owner = context.repository_owner;
-            console.log(owner);
-            const repository_name = context.event.repository.name;
+            const ownerAndRepoName = context.payload.repository.full_name.split('/');
+            const owner = wwnerAndRepoName[0];
+            const repositoryName = wwnerAndRepoName[1];
             console.log(repository_name)
             return github.repos.getLatestRelease({
               owner,
-              repository_name
+              repositoryName
             });
 
       - name: Show latest release
