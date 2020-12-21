@@ -29,7 +29,8 @@ jobs:
               owner,
               repo,
             });
-            let { tag_name } = res.data
+            console.log(res);
+            let { tag_name } = res.data;
             const index = tag_name.indexOf('v');
             if (0 <= index) {
               tag_name = tag_name.slice(index + 1);
