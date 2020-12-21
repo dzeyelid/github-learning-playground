@@ -6,6 +6,7 @@ on:
       - opened
       - labeled
       - edited
+      - synchronize
 
 env:
   PULL_REQUEST_LABEL: auto-generate
