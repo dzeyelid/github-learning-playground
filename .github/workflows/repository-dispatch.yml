@@ -123,8 +123,12 @@ jobs:
               inputs,
             };
             console.log(params);
-            # const res = await github.actions.createWorkflowDispatch(params);
-            const res = await github.request("POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches", params);
+            // const res = await github.actions.createWorkflowDispatch(params);
+            // const res = await github.request("POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches", params);
+            const res = await github.request("POST /repos/dzeyelid/github-actions-playground/actions/workflows/generate.yml/dispatches", {
+              ref,
+              inputs,
+            });
             console.log(res);
         env:
           NEXT_VERSION: ${{ needs.next_release_version.outputs.NEXT_VERSION }}
