@@ -112,9 +112,9 @@ jobs:
             const owner = ownerAndRepoName[0];
             const repo = ownerAndRepoName[1];
             const workflow_id = 'generate.yml';
-            const inputs = JSON.stringify({
+            const inputs = {
               target_version: process.env.NEXT_VERSION
-            });
+            };
             const params = {
               owner,
               repo,
