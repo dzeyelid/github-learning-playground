@@ -40,7 +40,7 @@ jobs:
 
       - name: Show latest release
         run: |
-          echo $RESULT | jq
+          echo $RESULT
         env:
           RESULT: ${{ steps.get-latest-release.outputs.result }}
 
