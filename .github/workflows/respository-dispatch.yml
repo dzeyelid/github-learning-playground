@@ -22,8 +22,8 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             return github.repos.getLatestRlease({
-              github.repository_owner,
-              github.event.repository.name
+              context.repository_owner,
+              context.event.repository.name
             })
 
       - name: Show latest release
