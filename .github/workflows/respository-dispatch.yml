@@ -25,10 +25,16 @@ jobs:
             const ownerAndRepoName = context.payload.repository.full_name.split('/');
             const owner = ownerAndRepoName[0];
             const repo = ownerAndRepoName[1];
-            return github.repos.getLatestRelease({
+            const res = github.repos.getLatestRelease({
               owner,
               repo,
             });
+            let { tag_name } = res.data
+            const index = tag_name.indexOf('v');
+            if (0 <= index) {
+              tag_name = tag_name.slice(index + 1);
+            }
+            return tag_name
 
       - name: Show latest release
         run: |
@@ -36,9 +42,13 @@ jobs:
         env:
           RESULT: ${{ steps.get-latest-release.outputs.result }}
 
-      - name: Create new release
-        if: ${{ steps.get-latest-release.outputs.result }}
+      - name: Calculate next release version
+        id: next-release-version
         uses: christian-draeger/increment-semantic-version@1.0.2
         with:
-          current-version: ${{ steps.get-latest-release.outputs.result.data.tag_name }}
+          current-version: ${{ steps.get-latest-release.outputs.result }}
           version-fragment: 'feature'
+
+      - name: Show next release version
+        run: |
+          echo ${{ steps.next-release-version.outputs.next-version }}
