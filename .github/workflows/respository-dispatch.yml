@@ -15,12 +15,26 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
 
-      # - name: Get latest release
-      #   uses: actions/github-script@v3
-      #   with:
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
-      #     script: |
-      #       github.repos.getLatestRlease({
-      #         github.context.owner,
-      #         github.contect.repository_name
-      #       })
+      - name: Get latest release
+        id: get-latest-release
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            return github.repos.getLatestRlease({
+              github.repository_owner,
+              github.event.repository.name
+            })
+
+      - name: Show latest release
+        run: |
+          echo $RESULT | jq
+        env:
+          RESULT: ${{ toJson(steps.get-latest-release.outputs.result) }}
+
+      - name: Create new release
+        if: ${{ steps.get-latest-release.outputs.result }}
+        uses: christian-draeger/increment-semantic-version@1.0.2
+        with:
+          current-version: ${{ steps.get-latest-release.outputs.result.tag_name }}
+          version-fragment: 'feature'
