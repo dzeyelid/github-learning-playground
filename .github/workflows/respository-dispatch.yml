@@ -108,11 +108,11 @@ jobs:
           result-encoding: string
           script: |
             console.log(context);
-            const ownerAndRepoName = context.payload.repository.full_name.split('/');
+            const { ref, payload } = context;
+            const ownerAndRepoName = payload.repository.full_name.split('/');
             const owner = ownerAndRepoName[0];
             const repo = ownerAndRepoName[1];
             const workflow_id = 'generate.yml';
-            const ref = process.env.BRANCH_NAME;
             const inputs = {
               target_version: process.env.NEXT_VERSION
             };
@@ -124,5 +124,4 @@ jobs:
               inputs,
             });
         env:
-          BRANCH_NAME: refs/heads/${{ env.PULL_REQUEST_BRANCH_PREFIX }}${{ needs.next_release_version.outputs.NEXT_VERSION }}
           NEXT_VERSION: ${{ needs.next_release_version.outputs.NEXT_VERSION }}
