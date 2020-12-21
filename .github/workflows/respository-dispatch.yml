@@ -95,7 +95,7 @@ jobs:
           BRANCH_NAME: ${{ env.PULL_REQUEST_BRANCH_PREFIX }}${{ needs.next_release_version.outputs.NEXT_VERSION }}
 
   generate_code:
-    name: Generate code
+    name: Run generate workflow
     needs:
       - next_release_version
       - create_pull_request
@@ -111,7 +111,7 @@ jobs:
             const ownerAndRepoName = context.payload.repository.full_name.split('/');
             const owner = ownerAndRepoName[0];
             const repo = ownerAndRepoName[1];
-            const workflow_id = 'generate';
+            const workflow_id = 'generate.yml';
             const ref = process.env.BRANCH_NAME;
             const inputs = {
               target_version: process.env.NEXT_VERSION
