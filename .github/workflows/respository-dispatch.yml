@@ -123,7 +123,8 @@ jobs:
               inputs,
             };
             console.log(params);
-            const res = await github.actions.createWorkflowDispatch(params);
+            # const res = await github.actions.createWorkflowDispatch(params);
+            const res = await github.request("POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches");
             console.log(res);
         env:
           NEXT_VERSION: ${{ needs.next_release_version.outputs.NEXT_VERSION }}
