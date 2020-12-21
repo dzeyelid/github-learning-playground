@@ -21,7 +21,9 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            console.log(.payload.repository.full_name);
             const ownerAndRepoName = context.payload.repository.full_name.split('/');
+            console.log(ownerAndRepoName);
             const owner = ownerAndRepoName[0];
             const repositoryName = ownerAndRepoName[1];
             return github.repos.getLatestRelease({
