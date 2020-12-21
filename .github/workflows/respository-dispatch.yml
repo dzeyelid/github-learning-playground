@@ -34,7 +34,7 @@ jobs:
         run: |
           echo $RESULT | jq
         env:
-          RESULT: ${{ fromJson(steps.get-latest-release.outputs.result) }}
+          RESULT: ${{ steps.get-latest-release.outputs.result }}
 
       - name: Create new release
         if: ${{ steps.get-latest-release.outputs.result }}
