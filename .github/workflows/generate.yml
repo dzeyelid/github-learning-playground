@@ -1,0 +1,60 @@
+name: Generate code
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_version:
+        description: Target version to generate code
+        required: true
+  pull_request:
+    types:
+      - opened
+      - labeled
+      - edited
+      - synchronize
+
+env:
+  PULL_REQUEST_LABEL: auto-generate
+  PULL_REQUEST_BRANCH_PREFIX: auto-generated/
+
+jobs:
+  check_pull_request:
+    name: Check pull request
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check labels
+        if: ${{ github.event.name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, env.PULL_REQUEST_LABEL) }}
+        run: |
+          echo '::warning::This pull request event does not have valid label'
+          exit 1
+
+  target_version:
+    name: Get target version
+    runs-on: ubuntu-latest
+    outputs:
+      VERSION: ${{ github.event.inputs.target_version }}
+    steps:
+      - name: Get version from previous workflow or pull request
+        uses: actions/github-script@v3
+        with:
+          result-encoding: string
+          script: |
+            console.log(context);
+
+  generate_code:
+    name: Create or upate pull request
+    needs:
+      - target_version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Create blank commit
+        run: |
+          git config user.name "Auto generator"
+          git commit --allow-empty -m "Generate code for ${{ needs.target_version.outputs.VERSION }}"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+
