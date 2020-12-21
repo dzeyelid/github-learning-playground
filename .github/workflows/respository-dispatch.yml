@@ -53,4 +53,4 @@ jobs:
         with:
           title: ${{ steps.next-release-version.outputs.next-version }}
           label: ${{ env.PULL_REQUEST_LABEL }}
-          branch: ${{ PULL_REQUEST_BRANCH_PREFIX }}${{ steps.next-release-version.outputs.next-version }}
+          branch: ${{ env.PULL_REQUEST_BRANCH_PREFIX }}${{ steps.next-release-version.outputs.next-version }}
