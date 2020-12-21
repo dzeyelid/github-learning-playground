@@ -52,7 +52,6 @@ jobs:
               owner,
               repo,
             });
-            console.log(res);
             let { tag_name } = res.data;
             const index = tag_name.indexOf('v');
             if (0 <= index) {
@@ -98,6 +97,7 @@ jobs:
   generate_code:
     name: Generate code
     needs:
+      - next_release_version
       - create_pull_request
     runs-on: ubuntu-latest
     steps:
