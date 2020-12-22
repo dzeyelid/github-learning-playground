@@ -7,7 +7,7 @@ on:
 
 env:
   PULL_REQUEST_LABEL: auto-generate
-  PULL_REQUEST_BRANCH_PREFIX: auto-generated/
+  PULL_REQUEST_BRANCH_NAME: auto-generated
 
 jobs:
   original_release_tag:
@@ -78,6 +78,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
       - name: Create blank commit
         run: |
           git config user.name "Auto generator"
@@ -91,37 +93,6 @@ jobs:
           labels: ${{ env.PULL_REQUEST_LABEL }}
           branch: ${{ env.BRANCH_NAME }}
           delete-branch: true
-          token: ${{ secrets.MY_GITHUB_TOKEN }}
+          # token: ${{ secrets.MY_GITHUB_TOKEN }}
         env:
-          BRANCH_NAME: ${{ env.PULL_REQUEST_BRANCH_PREFIX }}${{ needs.next_release_version.outputs.NEXT_VERSION }}
-
-  # generate_code:
-  #   name: Run generate workflow
-  #   needs:
-  #     - next_release_version
-  #     - create_pull_request
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Run generate workflow
-  #       uses: actions/github-script@v3
-  #       with:
-  #         github-token: ${{ secrets.MY_GITHUB_TOKEN }}
-  #         result-encoding: string
-  #         script: |
-  #           const { ref, payload } = context;
-  #           const ownerAndRepoName = payload.repository.full_name.split('/');
-  #           const owner = ownerAndRepoName[0];
-  #           const repo = ownerAndRepoName[1];
-  #           const workflow_id = 'generate.yml';
-  #           const inputs = {
-  #             target_version: process.env.NEXT_VERSION
-  #           };
-  #           github.actions.createWorkflowDispatch({
-  #             owner,
-  #             repo,
-  #             workflow_id,
-  #             ref,
-  #             inputs,
-  #           });
-  #       env:
-  #         NEXT_VERSION: ${{ needs.next_release_version.outputs.NEXT_VERSION }}
+          BRANCH_NAME: ${{ env.PULL_REQUEST_BRANCH_NAME }}

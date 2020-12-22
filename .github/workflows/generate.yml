@@ -26,7 +26,7 @@ jobs:
           exit 1
 
   generate_code:
-    name: Create or upate pull request
+    name: Generate code and push them
     needs:
       - preprocess
     runs-on: ubuntu-latest
@@ -45,5 +45,4 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          # branch: ${{ env.PULL_REQUEST_BRANCH_PREFIX }}${{ needs.preprocess.outputs.TARGET_VERSION }}
           branch: ${{ github.head_ref }}
