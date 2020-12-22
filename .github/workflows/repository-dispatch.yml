@@ -78,8 +78,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          persist-credentials: false
       - name: Create blank commit
         run: |
           git config user.name "Auto generator"
@@ -93,6 +91,6 @@ jobs:
           labels: ${{ env.PULL_REQUEST_LABEL }}
           branch: ${{ env.BRANCH_NAME }}
           delete-branch: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.MY_GITHUB_TOKEN }}
         env:
           BRANCH_NAME: ${{ env.PULL_REQUEST_BRANCH_NAME }}
