@@ -8,16 +8,30 @@ on:
       - closed
 
 jobs:
-  create_draft_release:
-    name: Create draft release
+  preprocess:
+    name: Check pull request
     runs-on: ubuntu-latest
+    outputs:
+      TARGET_VERSION: ${{ github.event.pull_request.title }}
     steps:
+      - name: Check labels
+        if: ${{ github.event.name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, env.PULL_REQUEST_LABEL) }}
+        run: |
+          echo '::warning::This pull request event does not have valid label'
+          exit 1
+
       - name: Check merged status
         if: ${{ ! github.event.pull_request.merged }}
         run: |
           echo '::warning::This pull request has been just closed without merge'
           exit 1
 
+  create_draft_release:
+    name: Create draft release
+    needs:
+      - preprocess
+    runs-on: ubuntu-latest
+    steps:
       - name: Create draft release
         uses: actions/create-release@v1
         with:
@@ -28,3 +42,20 @@ jobs:
           draft: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Delete working branch
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            console.log(context);
+            const ownerAndRepoName = context.payload.repository.full_name.split('/');
+            const owner = ownerAndRepoName[0];
+            const repo = ownerAndRepoName[1];
+            const ref = context.payload.head_ref;
+            const res = await github.git.deleteRef({
+              owner,
+              repo,
+              ref,
+            });
+            console.log(res);
