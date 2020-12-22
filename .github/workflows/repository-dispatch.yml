@@ -91,6 +91,7 @@ jobs:
           labels: ${{ env.PULL_REQUEST_LABEL }}
           branch: ${{ env.BRANCH_NAME }}
           delete-branch: true
+          token: ${{ secrets.MY_GITHUB_TOKEN }}
         env:
           BRANCH_NAME: ${{ env.PULL_REQUEST_BRANCH_PREFIX }}${{ needs.next_release_version.outputs.NEXT_VERSION }}
 
@@ -115,16 +116,12 @@ jobs:
             const inputs = {
               target_version: process.env.NEXT_VERSION
             };
-            const params = {
+            github.actions.createWorkflowDispatch({
               owner,
               repo,
               workflow_id,
               ref,
-              ref,
               inputs,
-            };
-            console.log(params);
-            const res = await github.actions.createWorkflowDispatch(params);
-            console.log(res);
+            });
         env:
           NEXT_VERSION: ${{ needs.next_release_version.outputs.NEXT_VERSION }}
