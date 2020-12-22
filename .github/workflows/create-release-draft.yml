@@ -1,11 +1,16 @@
 name: Create release draft
 
 on:
-  push:
+  # push:
+  #   branches:
+  #     - main
+  #   paths-ignore:
+  #     - .github/**
+  pull_request:
     branches:
       - main
-    paths-ignore:
-      - .github/**
+    types:
+      - closed
 
 jobs:
   test:
