@@ -10,7 +10,6 @@ on:
 
 env:
   PULL_REQUEST_LABEL: auto-generate
-  # PULL_REQUEST_BRANCH_PREFIX: auto-generated/
 
 jobs:
   preprocess:
