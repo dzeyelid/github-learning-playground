@@ -6,7 +6,6 @@ on:
       - opened
       - labeled
       - edited
-      - synchronize
 
 env:
   PULL_REQUEST_LABEL: auto-generate
@@ -37,7 +36,7 @@ jobs:
 
       - name: Update version file
         run: |
-          echo $VERSION >> version.txt
+          echo $VERSION > version.txt
         env:
           VERSION: ${{ needs.preprocess.outputs.TARGET_VERSION }}
 
