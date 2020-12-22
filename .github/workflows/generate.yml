@@ -42,3 +42,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           # branch: ${{ env.PULL_REQUEST_BRANCH_PREFIX }}${{ needs.preprocess.outputs.TARGET_VERSION }}
+          branch: ${{ github.ref }}
