@@ -42,7 +42,7 @@ jobs:
       - name: Create a commit
         run: |
           git branch
-          git config user.name "Auto generator"
+          git config user.name "Auto code generator"
           git add version.txt
           git commit -m "Generate code for ${{ needs.preprocess.outputs.TARGET_VERSION }}"
 
