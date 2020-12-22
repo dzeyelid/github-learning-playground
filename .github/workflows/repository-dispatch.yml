@@ -94,4 +94,4 @@ jobs:
             tag: ${{ needs.original_release_tag.outputs.RELEASE_TAG }}
           labels: ${{ env.PULL_REQUEST_LABEL }}
           branch: ${{ env.PULL_REQUEST_BRANCH_NAME }}
-          delete-branch: true
+
