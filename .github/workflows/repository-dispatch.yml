@@ -101,41 +101,30 @@ jobs:
       - create_pull_request
     runs-on: ubuntu-latest
     steps:
-      # - name: Run generate workflow
-      #   uses: actions/github-script@v3
-      #   with:
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
-      #     result-encoding: string
-      #     script: |
-      #       const { ref, payload } = context;
-      #       const ownerAndRepoName = payload.repository.full_name.split('/');
-      #       const owner = ownerAndRepoName[0];
-      #       const repo = ownerAndRepoName[1];
-      #       const workflow_id = 'generate.yml';
-      #       const inputs = {
-      #         target_version: process.env.NEXT_VERSION
-      #       };
-      #       const params = {
-      #         owner,
-      #         repo,
-      #         workflow_id,
-      #         ref,
-      #         data: {
-      #           ref,
-      #           inputs,
-      #         }
-      #       };
-      #       console.log(params);
-      #       const res = await github.actions.createWorkflowDispatch(params);
-      #       console.log(res);
-      #   env:
-      #     NEXT_VERSION: ${{ needs.next_release_version.outputs.NEXT_VERSION }}
-
       - name: Run generate workflow
-        uses: octokit/request-action@v2.x
+        uses: actions/github-script@v3
         with:
-          route: POST /repos/dzeyelid/github-actions-playground/actions/workflows/generate.yml/dispatches
-          ref: ${{ github.ref }}
+          github-token: ${{ secrets.MY_GITHUB_TOKEN }}
+          result-encoding: string
+          script: |
+            const { ref, payload } = context;
+            const ownerAndRepoName = payload.repository.full_name.split('/');
+            const owner = ownerAndRepoName[0];
+            const repo = ownerAndRepoName[1];
+            const workflow_id = 'generate.yml';
+            const inputs = {
+              target_version: process.env.NEXT_VERSION
+            };
+            const params = {
+              owner,
+              repo,
+              workflow_id,
+              ref,
+              ref,
+              inputs,
+            };
+            console.log(params);
+            const res = await github.actions.createWorkflowDispatch(params);
+            console.log(res);
         env:
-          GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
           NEXT_VERSION: ${{ needs.next_release_version.outputs.NEXT_VERSION }}
