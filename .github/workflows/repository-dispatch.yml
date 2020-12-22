@@ -137,5 +137,5 @@ jobs:
           route: POST /repos/dzeyelid/github-actions-playground/actions/workflows/generate.yml/dispatches
           ref: ${{ github.ref }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
           NEXT_VERSION: ${{ needs.next_release_version.outputs.NEXT_VERSION }}
