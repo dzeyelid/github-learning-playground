@@ -35,10 +35,18 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
-      - name: Create blank commit
+      - name: Update version file
         run: |
+          echo $VERSION >> version.txt
+        env:
+          VERSION: ${{ needs.preprocess.outputs.TARGET_VERSION }}
+
+      - name: Create a commit
+        run: |
+          git branch
           git config user.name "Auto generator"
-          git commit --allow-empty -m "Generate code for ${{ needs.preprocess.outputs.TARGET_VERSION }}"
+          git add version.txt
+          git commit -m "Generate code for ${{ needs.preprocess.outputs.TARGET_VERSION }}"
 
       - name: Push changes
         uses: ad-m/github-push-action@master
