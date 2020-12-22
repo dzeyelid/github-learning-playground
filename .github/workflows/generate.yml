@@ -3,7 +3,6 @@ name: Generate code
 on:
   pull_request:
     types:
-      - opened
       - labeled
       - edited
 
