@@ -1,0 +1,35 @@
+name: Create draft release
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+
+jobs:
+  preprocess:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check merged status
+        if: ${{ ! github.event.pull_request.merged }}
+        run: |
+          echo '::warning::This pull request has been just closed without merge'
+          exit 1
+
+      - name: Show context
+        run: |
+          echo $CONTEXT | jq
+        env:
+          CONTEXT: ${{ toJson(github) }}
+
+      - name: Create draft release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ github.event.pull_request.title }}
+          release_name: Release v${{ github.event.pull_request.title }}
+          body: |
+            ${{ github.event.pull_request.body }}
+          draft: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
