@@ -50,8 +50,8 @@ jobs:
             fs.readdir(process.env.GITHUB_WORKSPACE, (err, files) => {
               files.forEach(file => console.log(file));
             });
-            const script = require(`${process.env.GITHUB_WORKSPACE}/.github/workflows/test.js`);
-            console.log(script({github, context}));
+            // const script = require(`${process.env.GITHUB_WORKSPACE}/.github/workflows/test.js`);
+            // console.log(script({github, context}));
 
             const ownerAndRepoName = context.payload.repository.full_name.split('/');
             const owner = ownerAndRepoName[0];
