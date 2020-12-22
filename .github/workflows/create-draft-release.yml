@@ -8,7 +8,8 @@ on:
       - closed
 
 jobs:
-  preprocess:
+  create_draft_release:
+    name: Create draft release
     runs-on: ubuntu-latest
     steps:
       - name: Check merged status
@@ -16,12 +17,6 @@ jobs:
         run: |
           echo '::warning::This pull request has been just closed without merge'
           exit 1
-
-      - name: Show context
-        run: |
-          echo $CONTEXT | jq
-        env:
-          CONTEXT: ${{ toJson(github) }}
 
       - name: Create draft release
         uses: actions/create-release@v1
