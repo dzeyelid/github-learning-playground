@@ -46,11 +46,6 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           result-encoding: string
           script: |
-            const fs = require('fs');
-            console.log(`dir: ${process.env.GITHUB_WORKSPACE}`);
-            fs.readdir(process.env.GITHUB_WORKSPACE, (err, files) => {
-              files.forEach(file => console.log(file));
-            });
             const script = require(`${process.env.GITHUB_WORKSPACE}/.github/workflows/test.js`);
             console.log(script({github, context}));
 
@@ -71,8 +66,8 @@ jobs:
                 version = tag_name;
               }
             } catch (e) {
-              console.log(e);
-              if (e instanceof RequestError && e.status == 404) {
+              console.log(`e = ${Object.getPrototypeOf(e)}`);
+              if (e.status == 404) {
                 console.log('Release is not found, so set version 0.0.0.');
                 version = '0.0.0';
               } else {
