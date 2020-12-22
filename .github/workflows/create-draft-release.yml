@@ -43,12 +43,18 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  delete_working_branch:
+    name: Delete working branch
+    needs:
+      - preprocess
+    runs-on: ubuntu-latest
+    steps:
       - name: Delete working branch
         uses: actions/github-script@v3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            console.log(context);
+            console.log(JSON.stringify(context.payload.pull_request.head));
             const ownerAndRepoName = context.payload.repository.full_name.split('/');
             const owner = ownerAndRepoName[0];
             const repo = ownerAndRepoName[1];
