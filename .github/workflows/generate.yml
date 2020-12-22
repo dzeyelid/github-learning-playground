@@ -10,7 +10,7 @@ on:
 
 env:
   PULL_REQUEST_LABEL: auto-generate
-  PULL_REQUEST_BRANCH_PREFIX: auto-generated/
+  # PULL_REQUEST_BRANCH_PREFIX: auto-generated/
 
 jobs:
   preprocess:
@@ -41,4 +41,4 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ env.PULL_REQUEST_BRANCH_PREFIX }}${{ needs.preprocess.outputs.TARGET_VERSION }}
+          # branch: ${{ env.PULL_REQUEST_BRANCH_PREFIX }}${{ needs.preprocess.outputs.TARGET_VERSION }}
