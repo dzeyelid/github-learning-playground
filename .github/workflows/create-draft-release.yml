@@ -54,11 +54,10 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            console.log(JSON.stringify(context.payload.pull_request.head));
             const ownerAndRepoName = context.payload.repository.full_name.split('/');
             const owner = ownerAndRepoName[0];
             const repo = ownerAndRepoName[1];
-            const ref = context.payload.head_ref;
+            const ref = context.payload.pull_request.head.ref;
             const res = await github.git.deleteRef({
               owner,
               repo,
