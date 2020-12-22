@@ -1,4 +1,4 @@
-module.exports = ({github, context}) => {
+module.exports = async ({github, context}) => {
   const ownerAndRepoName = context.payload.repository.full_name.split('/');
   const owner = ownerAndRepoName[0];
   const repo = ownerAndRepoName[1];
