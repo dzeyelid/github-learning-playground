@@ -38,7 +38,6 @@ jobs:
       NEXT_VERSION: ${{ steps.next_release_version.outputs.next-version }}
     steps:
       - uses: actions/checkout@v2
-      # If no release yet, this step fails as "HttpError: Not Found"
       - name: Get latest release
         id: get-latest-release
         uses: actions/github-script@v3
