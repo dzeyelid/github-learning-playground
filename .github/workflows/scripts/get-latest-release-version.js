@@ -4,7 +4,7 @@ module.exports = async ({github, context}) => {
   const repo = ownerAndRepoName[1];
   let version = '';
   try {
-    await github.repos.getLatestRelease({
+    const res = await github.repos.getLatestRelease({
       owner,
       repo,
     });
@@ -23,5 +23,5 @@ module.exports = async ({github, context}) => {
       throw e;
     }
   }
-  return version
+  return version;
 }
