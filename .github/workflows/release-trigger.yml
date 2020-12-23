@@ -12,3 +12,7 @@ jobs:
           echo $CONTEXT | jq
         env:
           CONTEXT: ${{ toJson(github) }}
+
+      - name: test
+        if: ${{ github.release }}
+        run: echo "github.release == true"
