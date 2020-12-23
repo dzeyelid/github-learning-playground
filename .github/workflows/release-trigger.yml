@@ -14,5 +14,5 @@ jobs:
           CONTEXT: ${{ toJson(github) }}
 
       - name: test
-        if: ${{ github.event_name == "release" }}
+        if: ${{ github.event_name == 'release' }}
         run: echo "github.release == true"
