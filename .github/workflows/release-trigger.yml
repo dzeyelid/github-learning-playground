@@ -7,8 +7,8 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - name: Show event
+      - name: Show context
         run: |
-          echo $EVENT | jq
+          echo $CONTEXT | jq
         env:
-          EVENT: ${{ toJson(github.event) }}
+          CONTEXT: ${{ toJson(github) }}
