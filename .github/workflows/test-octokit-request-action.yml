@@ -29,29 +29,12 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - run: "echo latest release: ${{ toJson(steps.get_latest_release_curly_brace.outputs.data) }}"
 
-  getDiff:
-    runs-on: ubuntu-latest
-    steps:
-    - name: "Get diff with :"
+    - name: "octokit/request-action@v2.x with :"
       uses: octokit/request-action@v2.x
-      id: compare_colon
+      id: get_latest_release_combine_curly_brace
       with:
-        route: GET /repos/:repo/compare/:base...:head
-        repo: ${{ github.repository }}
-        base: ${{ github.event.before }}
-        head: ${{ github.event.after }}
+        route: GET /repos/{repo}/releases/latest
+        repo: octokit/request-action
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - run: "echo latest release: ${{ toJson(steps.compare_colon.outputs.data) }}"
-
-    - name: "Get diff with {}"
-      uses: octokit/request-action@v2.x
-      id: compare_curly_brace
-      with:
-        route: GET /repos/{repo}/compare/{base}...{head}
-        repo: ${{ github.repository }}
-        base: ${{ github.event.before }}
-        head: ${{ github.event.after }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - run: "echo latest release: ${{ toJson(steps.compare_curly_brace.outputs.data) }}"
+    - run: "echo latest release: ${{ toJson(steps.get_latest_release_combine_curly_brace.outputs.data) }}"
