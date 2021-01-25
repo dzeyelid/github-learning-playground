@@ -16,7 +16,7 @@ jobs:
         repo: request-action
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - run: "echo latest release: ${{ steps.get_latest_release_colon.outputs.data }}"
+    - run: "echo latest release: ${{ toJson(steps.get_latest_release_colon.outputs.data) }}"
 
     - name: "octokit/request-action@v2.x with {}"
       uses: octokit/request-action@v2.x
@@ -27,7 +27,7 @@ jobs:
         repo: request-action
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - run: "echo latest release: ${{ steps.get_latest_release_curly_brace.outputs.data }}"
+    - run: "echo latest release: ${{ toJson(steps.get_latest_release_curly_brace.outputs.data) }}"
 
   getDiff:
     runs-on: ubuntu-latest
@@ -42,7 +42,7 @@ jobs:
         head: ${{ github.event.after }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - run: "echo latest release: ${{ steps.compare_colon.outputs.data }}"
+    - run: "echo latest release: ${{ toJson(steps.compare_colon.outputs.data) }}"
 
     - name: "Get diff with {}"
       uses: octokit/request-action@v2.x
@@ -54,4 +54,4 @@ jobs:
         head: ${{ github.event.after }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - run: "echo latest release: ${{ steps.compare_curly_brace.outputs.data }}"
+    - run: "echo latest release: ${{ toJson(steps.compare_curly_brace.outputs.data) }}"
