@@ -1,0 +1,57 @@
+name: Test octokit/request-action
+
+on:
+  workflow_run:
+
+jobs:
+  logLatestRelease:
+    runs-on: ubuntu-latest
+    steps:
+    - name: "octokit/request-action@v2.x with :"
+      uses: octokit/request-action@v2.x
+      id: get_latest_release_colon
+      with:
+        route: GET /repos/:owner/:repo/releases/latest
+        owner: octokit
+        repo: request-action
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - run: "echo latest release: ${{ steps.get_latest_release_colon.outputs.data }}"
+
+    - name: "octokit/request-action@v2.x with {}"
+      uses: octokit/request-action@v2.x
+      id: get_latest_release_curly_brace
+      with:
+        route: GET /repos/{owner}/{repo}/releases/latest
+        owner: octokit
+        repo: request-action
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - run: "echo latest release: ${{ steps.get_latest_release_curly_brace.outputs.data }}"
+
+  getDiff:
+    runs-on: ubuntu-latest
+    steps:
+    - name: "Get diff with :"
+      uses: octokit/request-action@v2.x
+      id: compare_colon
+      with:
+        route: GET /repos/:repo/compare/:base...:head
+        repo: ${{ github.repository }}
+        base: ${{ github.event.before }}
+        head: ${{ github.event.after }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - run: "echo latest release: ${{ steps.compare_colon.outputs.data }}"
+
+    - name: "Get diff with {}"
+      uses: octokit/request-action@v2.x
+      id: compare_curly_brace
+      with:
+        route: GET /repos/{repo}/compare/{base}...{head}
+        repo: ${{ github.repository }}
+        base: ${{ github.event.before }}
+        head: ${{ github.event.after }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - run: "echo latest release: ${{ steps.compare_curly_brace.outputs.data }}"
