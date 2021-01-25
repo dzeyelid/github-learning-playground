@@ -16,7 +16,9 @@ jobs:
         repo: request-action
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - run: "echo latest release: ${{ toJson(steps.get_latest_release_colon.outputs.data) }}"
+    - run: echo $RESULT | jq
+      env:
+        RESULT: ${{ steps.get_latest_release_colon.outputs.data) }}
 
     - name: "octokit/request-action@v2.x with {}"
       uses: octokit/request-action@v2.x
@@ -27,7 +29,21 @@ jobs:
         repo: request-action
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - run: "echo latest release: ${{ toJson(steps.get_latest_release_curly_brace.outputs.data) }}"
+    - run: echo $RESULT | jq
+      env:
+        RESULT: ${{ steps.get_latest_release_curly_brace.outputs.data) }}
+
+    - name: "octokit/request-action@v2.x with : (retrieve the latest release of this repo)"
+      uses: octokit/request-action@v2.x
+      id: get_latest_release_this_repo
+      with:
+        route: GET /repos/:repo/releases/latest
+        repo: ${{ github.repository }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - run: echo $RESULT | jq
+      env:
+        RESULT: ${{ steps.get_latest_release_this_repo.outputs.data) }}
 
     - name: "octokit/request-action@v2.x with conbined argument and :"
       uses: octokit/request-action@v2.x
@@ -37,7 +53,9 @@ jobs:
         repo: octokit/request-action
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - run: "echo latest release: ${{ toJson(steps.get_latest_release_combine_colon.outputs.data) }}"
+    - run: echo $RESULT | jq
+      env:
+        RESULT: ${{ steps.get_latest_release_combine_colon.outputs.data) }}
 
     - name: "octokit/request-action@v2.x with conbined argument and {}"
       uses: octokit/request-action@v2.x
@@ -47,4 +65,6 @@ jobs:
         repo: octokit/request-action
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - run: "echo latest release: ${{ toJson(steps.get_latest_release_combine_curly_brace.outputs.data) }}"
+    - run: echo $RESULT | jq
+      env:
+        RESULT: ${{ steps.get_latest_release_combine_curly_brace.outputs.data) }}
