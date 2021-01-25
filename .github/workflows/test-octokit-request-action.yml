@@ -1,7 +1,7 @@
 name: Test octokit/request-action
 
 on:
-  workflow_run:
+  workflow_dispatch:
 
 jobs:
   logLatestRelease:
