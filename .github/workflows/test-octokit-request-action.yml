@@ -18,7 +18,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - run: echo $RESULT | jq
       env:
-        RESULT: ${{ steps.get_latest_release_colon.outputs.data) }}
+        RESULT: ${{ steps.get_latest_release_colon.outputs.data }}
 
     - name: "octokit/request-action@v2.x with {}"
       uses: octokit/request-action@v2.x
@@ -31,7 +31,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - run: echo $RESULT | jq
       env:
-        RESULT: ${{ steps.get_latest_release_curly_brace.outputs.data) }}
+        RESULT: ${{ steps.get_latest_release_curly_brace.outputs.data }}
 
     - name: "octokit/request-action@v2.x with : (retrieve the latest release of this repo)"
       uses: octokit/request-action@v2.x
@@ -43,7 +43,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - run: echo $RESULT | jq
       env:
-        RESULT: ${{ steps.get_latest_release_this_repo.outputs.data) }}
+        RESULT: ${{ steps.get_latest_release_this_repo.outputs.data }}
 
     - name: "octokit/request-action@v2.x with conbined argument and :"
       uses: octokit/request-action@v2.x
@@ -55,7 +55,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - run: echo $RESULT | jq
       env:
-        RESULT: ${{ steps.get_latest_release_combine_colon.outputs.data) }}
+        RESULT: ${{ steps.get_latest_release_combine_colon.outputs.data }}
 
     - name: "octokit/request-action@v2.x with conbined argument and {}"
       uses: octokit/request-action@v2.x
@@ -67,4 +67,4 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - run: echo $RESULT | jq
       env:
-        RESULT: ${{ steps.get_latest_release_combine_curly_brace.outputs.data) }}
+        RESULT: ${{ steps.get_latest_release_combine_curly_brace.outputs.data }}
