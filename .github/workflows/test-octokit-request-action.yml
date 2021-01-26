@@ -1,6 +1,9 @@
 name: Test octokit/request-action
 
 on:
+  push:
+    branches:
+    - fix-workflow
   workflow_dispatch:
 
 jobs:
@@ -68,11 +71,15 @@ jobs:
       uses: actions/github-script@v3
       with:
         script: |
-          console.log(context.payload.repository.owner)
+          console.log(context);
+          console.log(context.payload.repository.owner);
           return {
-            "owner": '',
+            "owner": context.payload.repository.owner.login,
             "repo": context.payload.repository.name
-          }
+          };
+    - run: echo $RESULT | jq
+      env:
+        RESULT: ${{ steps.split_context_repo.outputs.result }}
     - name: "octokit/request-action@v2.x with separated args using split context"
       uses: octokit/request-action@v2.x
       id: get_latest_release_this_repo
