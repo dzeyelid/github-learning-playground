@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
 
 jobs:
-  logLatestRelease:
+  separatedArguments:
     runs-on: ubuntu-latest
     steps:
-    - name: "octokit/request-action@v2.x with :"
+    - name: "octokit/request-action@v2.x with : (will be deprecated)"
       uses: octokit/request-action@v2.x
       id: get_latest_release_colon
       with:
@@ -33,19 +33,10 @@ jobs:
       env:
         RESULT: ${{ steps.get_latest_release_curly_brace.outputs.data }}
 
-    - name: "octokit/request-action@v2.x with : (retrieve the latest release of this repo)"
-      uses: octokit/request-action@v2.x
-      id: get_latest_release_this_repo
-      with:
-        route: GET /repos/:repo/releases/latest
-        repo: ${{ github.repository }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - run: echo $RESULT | jq
-      env:
-        RESULT: ${{ steps.get_latest_release_this_repo.outputs.data }}
-
-    - name: "octokit/request-action@v2.x with conbined argument and :"
+  combinedArguments:
+    runs-on: ubuntu-latest
+    steps:
+    - name: "octokit/request-action@v2.x with conbined argument and : (will be deprecated)"
       uses: octokit/request-action@v2.x
       id: get_latest_release_combine_colon
       with:
@@ -57,7 +48,7 @@ jobs:
       env:
         RESULT: ${{ steps.get_latest_release_combine_colon.outputs.data }}
 
-    - name: "octokit/request-action@v2.x with conbined argument and {}"
+    - name: "octokit/request-action@v2.x with conbined argument and {} (encording issue was fixed)"
       uses: octokit/request-action@v2.x
       id: get_latest_release_combine_curly_brace
       with:
@@ -68,3 +59,25 @@ jobs:
     - run: echo $RESULT | jq
       env:
         RESULT: ${{ steps.get_latest_release_combine_curly_brace.outputs.data }}
+
+  splitContextExample:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Split repository context
+      id: split_context_repo
+      uses: actions/github-script@v3
+      with:
+        script: |
+          console.log(context)
+    # - name: "octokit/request-action@v2.x with separated args using split context"
+    #   uses: octokit/request-action@v2.x
+    #   id: get_latest_release_this_repo
+    #   with:
+    #     route: GET /repos/{owner}/{repo}/releases/latest
+    #     owner: ${{ steps.split_context_repo.outputs.result.owner }}
+    #     repo: ${{ steps.split_context_repo.outputs.result.repo }}
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    # - run: echo $RESULT | jq
+    #   env:
+    #     RESULT: ${{ steps.get_latest_release_this_repo.outputs.data }}
