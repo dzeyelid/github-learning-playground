@@ -71,11 +71,10 @@ jobs:
       uses: actions/github-script@v3
       with:
         script: |
-          console.log(context);
-          console.log(context.payload.repository.owner);
+          const split = context.payload.repository.full_name.split('/');
           return {
-            "owner": context.payload.repository.owner.login,
-            "repo": context.payload.repository.name
+            owner: split[0],
+            repo: split[1]
           };
     - run: echo $RESULT | jq
       env:
@@ -85,8 +84,8 @@ jobs:
       id: get_latest_release_this_repo
       with:
         route: GET /repos/{owner}/{repo}/releases/latest
-        owner: ${{ steps.split_context_repo.outputs.result.owner }}
-        repo: ${{ steps.split_context_repo.outputs.result.repo }}
+        owner: ${{ fromJson(steps.split_context_repo.outputs.result).owner }}
+        repo: ${{ fromJson(steps.split_context_repo.outputs.result).repo }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - run: echo $RESULT | jq
