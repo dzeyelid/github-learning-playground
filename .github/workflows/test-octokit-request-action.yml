@@ -68,16 +68,20 @@ jobs:
       uses: actions/github-script@v3
       with:
         script: |
-          console.log(context)
-    # - name: "octokit/request-action@v2.x with separated args using split context"
-    #   uses: octokit/request-action@v2.x
-    #   id: get_latest_release_this_repo
-    #   with:
-    #     route: GET /repos/{owner}/{repo}/releases/latest
-    #     owner: ${{ steps.split_context_repo.outputs.result.owner }}
-    #     repo: ${{ steps.split_context_repo.outputs.result.repo }}
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    # - run: echo $RESULT | jq
-    #   env:
-    #     RESULT: ${{ steps.get_latest_release_this_repo.outputs.data }}
+          console.log(context.payload.repository.owner)
+          return {
+            "owner": '',
+            "repo": context.payload.repository.name
+          }
+    - name: "octokit/request-action@v2.x with separated args using split context"
+      uses: octokit/request-action@v2.x
+      id: get_latest_release_this_repo
+      with:
+        route: GET /repos/{owner}/{repo}/releases/latest
+        owner: ${{ steps.split_context_repo.outputs.result.owner }}
+        repo: ${{ steps.split_context_repo.outputs.result.repo }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - run: echo $RESULT | jq
+      env:
+        RESULT: ${{ steps.get_latest_release_this_repo.outputs.data }}
