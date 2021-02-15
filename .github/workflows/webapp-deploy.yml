@@ -3,12 +3,16 @@ name: Azure Web App Deploy
 on:
   push:
     branches:
-      - main
+    - main
     paths:
-      - src/webapp/**
+    - src/webapp/**
   pull_request:
     paths:
-      - src/webapp/**
+    - src/webapp/**
+    types:
+    - opened
+    - synchronize
+    - reopened
   workflow_dispatch:
 
 env:
@@ -26,6 +30,7 @@ jobs:
     - run: echo $CONTEXT | jq
       env:
         CONTEXT: ${{ tojson(github) }}
+      shell: bash
     - uses: actions/checkout@master
     - name: Setup .NET Core SDK ${{ env.DOTNET_VERSION }}
       uses: actions/setup-dotnet@v1
@@ -56,5 +61,5 @@ jobs:
 
     # Swap
     - name: 'Swap slot from staging'
-      if: ${{ github.event_name == 'push' && github.ref == 'main' }}
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
       run: az webapp deployment slot swap --slot staging --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }}
