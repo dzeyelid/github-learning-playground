@@ -55,6 +55,6 @@ jobs:
         slot-name: if staging
 
     # Swap
-    - name: 'Run Azure webapp deploy action'
+    - name: 'Swap slot from staging'
       if: ${{ github.event_name == 'push' && github.ref == 'main' }}
       run: az webapp deployment slot swap --slot staging --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }}
