@@ -4,7 +4,9 @@ on:
   push:
     branches:
       - main
-      - webapp-deploy
+    paths:
+      - src/webapp
+  pull_request:
     paths:
       - src/webapp
   workflow_dispatch:
@@ -12,6 +14,7 @@ on:
 env:
   DOTNET_VERSION: '3.1.x'
   AZURE_WEBAPP_NAME: 'app-playground20210216'
+  RESOURCE_GROUP: 'rg-playground20210216-web'
 
 jobs:
   build-and-deploy:
@@ -20,6 +23,9 @@ jobs:
       WORKING_DIR: src/webapp
       AZURE_WEBAPP_PACKAGE_PATH: ${{ github.workspace }}/outputs
     steps:
+    - run: echo $CONTEXT | jq
+      env:
+        CONTEXT: ${{ tojson(github) }}
     - uses: actions/checkout@master
     - name: Setup .NET Core SDK ${{ env.DOTNET_VERSION }}
       uses: actions/setup-dotnet@v1
@@ -40,9 +46,15 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
         
-    # Deploy to Azure Web apps
-    - name: 'Run Azure webapp deploy action using publish profile credentials'
+    # Deploy to Azure Web apps staging slot
+    - name: 'Deploy to staging'
       uses: azure/webapps-deploy@v2
       with: 
         app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
         package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
+        slot-name: if staging
+
+    # Swap
+    - name: 'Swap slot from staging'
+      if: ${{ github.event_name == 'push' && github.ref == 'main' }}
+      run: az webapp deployment slot swap --slot staging --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }}
