@@ -1,0 +1,15 @@
+name: Call a action on other repository
+
+on:
+  workflow_dispatch:
+  
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        repository: 'dzeyelid/hello-github-actions'
+    - uses: ./action-a
+      with:
+        MY_NAME: "Baymax!"
