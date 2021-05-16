@@ -13,23 +13,25 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       TARGET_VERSION: ${{ github.event.pull_request.title }}
+      SKIP: ${{ env.SKIP == 'true' }}
     steps:
       - name: Check labels
         if: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, env.PULL_REQUEST_LABEL) }}
         run: |
           echo '::warning::This pull request event does not have valid label'
-          exit 1
+          echo 'SKIP=true' >> $GITHUB_ENV
 
       - name: Check merged status
-        if: ${{ ! github.event.pull_request.merged }}
+        if: ${{ env.SKIP != 'true' && ! github.event.pull_request.merged }}
         run: |
           echo '::warning::This pull request has been just closed without merge'
-          exit 1
+          echo 'SKIP=true' >> $GITHUB_ENV
 
   create_draft_release:
     name: Create draft release
     needs:
       - preprocess
+    if: ${{ ! needs.preprocess.outputs.SKIP }}
     runs-on: ubuntu-latest
     steps:
       - name: Create draft release

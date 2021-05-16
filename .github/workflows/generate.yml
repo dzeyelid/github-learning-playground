@@ -15,19 +15,33 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       TARGET_VERSION: ${{ github.event.pull_request.title }}
+      SKIP: ${{ env.SKIP == 'true' }}
     steps:
+      - name: Show GitHub context
+        if: ${{ env.RUNNER_DEBUG }}
+        run: |
+          echo "$GITHUB_CONTEXT"
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
       - name: Check labels
         if: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, env.PULL_REQUEST_LABEL) }}
         run: |
           echo '::warning::This pull request event does not have valid label'
-          exit 1
+          echo 'SKIP=true' >> $GITHUB_ENV
 
   generate_code:
     name: Generate code and push them
     needs:
       - preprocess
+    if: ${{ ! needs.preprocess.outputs.SKIP }}
     runs-on: ubuntu-latest
     steps:
+      - name: Show OUTPUTS content
+        if: ${{ env.RUNNER_DEBUG }}
+        run: |
+          echo "$OUTPUTS"
+        env:
+          OUTPUTS: ${{ toJSON(needs.preprocess.outputs) }}
       - uses: actions/checkout@v2
         with:
           persist-credentials: false
