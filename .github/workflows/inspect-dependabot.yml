@@ -41,7 +41,9 @@ jobs:
       - name: Show context attributes in actions/github-script@v4
         uses: actions/github-script@v4
         with:
-          script: console.log(context)
+          script: |
+            console.log(context)
+            console.log(context.repository.owner)
 
       - name: Comment to the pull request with GITHUB_TOKEN
         uses: actions/github-script@v4
@@ -52,8 +54,8 @@ jobs:
           script: |
             const { BODY } = process.env
             return github.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.name,
+              owner: context.repository.owner.name,
+              repo: context.repository.name,
               issue_number: context.issue.number,
               body: BODY,
             });
