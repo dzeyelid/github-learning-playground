@@ -49,6 +49,7 @@ jobs:
     name: Delete working branch
     needs:
       - preprocess
+    if: ${{ ! needs.preprocess.outputs.SKIP }}
     runs-on: ubuntu-latest
     steps:
       - name: Delete working branch
