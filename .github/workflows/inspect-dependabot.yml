@@ -1,0 +1,64 @@
+name: Inspect Dependabot
+
+on:
+  pull_request:
+    types: ["opened", "synchronize", "reopened", "edited"]
+
+jobs:
+  preprocess:
+    name: Check if this event from Dependabot
+    runs-on: ubuntu-latest
+    outputs:
+      SKIP: ${{ env.CONTINUE == 'true' }}
+    steps:
+      - name: Show GitHub context
+        if: ${{ env.RUNNER_DEBUG }}
+        run: |
+          echo "$GITHUB_CONTEXT"
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+
+      - name: Check label
+        if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'dependencies') }}
+        run: |
+          echo 'CONTINUE=true' >> $GITHUB_ENV
+
+      - name: Allow continue for dubug
+        if: ${{ env.CONTINUE != 'true' && env.RUNNER_DEBUG }}
+        run: |
+          echo 'CONTINUE=true' >> $GITHUB_ENV
+
+  main:
+    name: Main process
+    needs:
+      - preprocess
+    if: ${{ needs.preprocess.outputs.CONTINUE }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show context attributes in actions/github-script@v4
+        if: ${{ env.RUNNER_DEBUG }}
+        uses: actions/github-script@v4
+        with:
+          script: console.log(context)
+
+      - name: Comment to the pull request with GITHUB_TOKEN
+        uses: actions/github-script@v4
+        id: add-comment
+        env:
+          BODY: ${{ github.event.action }}
+        with:
+          script: |
+            const { BODY } = process.env
+            return github.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.name,
+              issue_number: context.issue.number,
+              body: BODY,
+            });
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Show the result
+        env:
+          RETURN_CONTEXT: ${{ toJson(steps.return_context.outputs) }}
+        run: |
+          echo "$RETURN_CONTEXT"
