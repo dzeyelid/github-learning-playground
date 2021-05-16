@@ -26,7 +26,7 @@ jobs:
     name: Main process
     needs:
       - preprocess
-    if: ${{ fromJSON(needs.preprocess.outputs).CONTINUE }}
+    if: ${{ needs.preprocess.outputs.CONTINUE }}
     runs-on: ubuntu-latest
     steps:
       - name: Show OUTPUTS value
@@ -35,7 +35,7 @@ jobs:
           echo "$CONTINUE"
         env:
           OUTPUTS: ${{ toJSON(needs.preprocess.outputs) }}
-          CONTINUE: ${{ fromJSON(needs.preprocess.outputs).CONTINUE }}
+          CONTINUE: ${{ needs.preprocess.outputs.CONTINUE }}
 
       - name: Show context attributes in actions/github-script@v4
         uses: actions/github-script@v4
