@@ -9,10 +9,9 @@ jobs:
     name: Check if this event from Dependabot
     runs-on: ubuntu-latest
     outputs:
-      SKIP: ${{ env.CONTINUE == 'true' }}
+      CONTINUE: ${{ env.CONTINUE != null && env.CONTINUE == 'true' }}
     steps:
       - name: Show GitHub context
-        if: ${{ env.RUNNER_DEBUG }}
         run: |
           echo "$GITHUB_CONTEXT"
         env:
@@ -23,23 +22,20 @@ jobs:
         run: |
           echo 'CONTINUE=true' >> $GITHUB_ENV
 
-      - name: Allow continue for dubug
-        if: ${{ env.CONTINUE != 'true' && env.RUNNER_DEBUG }}
-        run: |
-          echo 'CONTINUE=true' >> $GITHUB_ENV
-
   main:
     name: Main process
     needs:
       - preprocess
-    if: ${{ needs.preprocess.outputs.CONTINUE }}
+    if: ${{ fromJSON(needs.preprocess.outputs.CONTINUE) }}
     runs-on: ubuntu-latest
     steps:
-      - name: Show context attributes in actions/github-script@v4
-        if: ${{ env.RUNNER_DEBUG }}
-        uses: actions/github-script@v4
-        with:
-          script: console.log(context)
+      - name: Show OUTPUTS value
+        run: |
+          echo "$OUTPUTS"
+          echo "$CONTINUE"
+        env:
+          OUTPUTS: ${{ toJSON(needs.preprocess.outputs) }}
+          CONTINUE: ${{ needs.preprocess.outputs.CONTINUE }}
 
       - name: Comment to the pull request with GITHUB_TOKEN
         uses: actions/github-script@v4
@@ -51,7 +47,7 @@ jobs:
             const { BODY } = process.env
             return github.issues.createComment({
               owner: context.repo.owner,
-              repo: context.repo.name,
+              repo: context.repo.repo,
               issue_number: context.issue.number,
               body: BODY,
             });
@@ -59,6 +55,6 @@ jobs:
 
       - name: Show the result
         env:
-          RETURN_CONTEXT: ${{ toJson(steps.return_context.outputs) }}
+          RETURN_CONTEXT: ${{ toJson(steps.add-comment.outputs) }}
         run: |
           echo "$RETURN_CONTEXT"
