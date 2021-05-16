@@ -38,14 +38,6 @@ jobs:
           OUTPUTS: ${{ toJSON(needs.preprocess.outputs) }}
           CONTINUE: ${{ needs.preprocess.outputs.CONTINUE }}
 
-      - name: Show context attributes in actions/github-script@v4
-        uses: actions/github-script@v4
-        with:
-          script: |
-            console.log(context)
-            console.log(context.payload.repository.owner)
-            console.log(context.repo)
-
       - name: Comment to the pull request with GITHUB_TOKEN
         uses: actions/github-script@v4
         id: add-comment
@@ -55,8 +47,8 @@ jobs:
           script: |
             const { BODY } = process.env
             return github.issues.createComment({
-              owner: context.payload.repository.owner.name,
-              repo: context.payload.repository.name,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
               issue_number: context.issue.number,
               body: BODY,
             });
