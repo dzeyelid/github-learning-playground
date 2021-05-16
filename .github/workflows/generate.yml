@@ -17,7 +17,7 @@ jobs:
       TARGET_VERSION: ${{ github.event.pull_request.title }}
     steps:
       - name: Check labels
-        if: ${{ github.event.name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, env.PULL_REQUEST_LABEL) }}
+        if: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, env.PULL_REQUEST_LABEL) }}
         run: |
           echo '::warning::This pull request event does not have valid label'
           exit 1
