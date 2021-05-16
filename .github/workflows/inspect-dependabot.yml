@@ -12,7 +12,7 @@ jobs:
       CONTINUE: ${{ env.CONTINUE == 'true' }}
     steps:
       - name: Show GitHub context
-        if: ${{ env.RUNNER_DEBUG }}
+        if: ${{ env.RUNNER_DEBUG || env.STEP_DEBUG }}
         run: |
           echo "$GITHUB_CONTEXT"
         env:
@@ -24,7 +24,7 @@ jobs:
           echo 'CONTINUE=true' >> $GITHUB_ENV
 
       - name: Allow continue for dubug
-        if: ${{ env.CONTINUE != 'true' && env.RUNNER_DEBUG }}
+        if: ${{ env.CONTINUE != 'true' && (env.RUNNER_DEBUG || env.STEP_DEBUG) }}
         run: |
           echo 'CONTINUE=true' >> $GITHUB_ENV
 
@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Show context attributes in actions/github-script@v4
-        if: ${{ env.RUNNER_DEBUG }}
+        if: ${{ env.RUNNER_DEBUG || env.STEP_DEBUG }}
         uses: actions/github-script@v4
         with:
           script: console.log(context)
