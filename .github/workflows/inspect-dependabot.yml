@@ -30,6 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Show OUTPUTS value
+        if: ${{ needs.preprocess.outputs.CONTINUE }}
         run: |
           echo "$OUTPUTS"
           echo "$CONTINUE"
