@@ -26,9 +26,6 @@ jobs:
       - name: Check labels
         id: check-labels
         if: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, env.PULL_REQUEST_LABEL) }}
-        # run: |
-        #   echo '::warning::This pull request event does not have valid label'
-        #   exit 1
         run: |
           echo '::warning::This pull request event does not have valid label'
           echo "::set-output name=SKIP::true"
