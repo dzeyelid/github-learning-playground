@@ -9,10 +9,10 @@ jobs:
     name: Check if this event from Dependabot
     runs-on: ubuntu-latest
     outputs:
-      CONTINUE: ${{ env.CONTINUE == 'true' }}
+      CONTINUE: ${{ env.CONTINUE != null && env.CONTINUE == 'true' }}
     steps:
       - name: Show GitHub context
-        if: ${{ env.RUNNER_DEBUG || env.STEP_DEBUG }}
+        if: ${{ env.RUNNER_DEBUG != null }}
         run: |
           echo "$GITHUB_CONTEXT"
         env:
@@ -24,7 +24,7 @@ jobs:
           echo 'CONTINUE=true' >> $GITHUB_ENV
 
       - name: Allow continue for dubug
-        if: ${{ env.CONTINUE != 'true' && (env.RUNNER_DEBUG || env.STEP_DEBUG) }}
+        if: ${{ env.CONTINUE != 'true' && env.RUNNER_DEBUG != null }}
         run: |
           echo 'CONTINUE=true' >> $GITHUB_ENV
 
@@ -35,8 +35,14 @@ jobs:
     if: ${{ needs.preprocess.outputs.CONTINUE }}
     runs-on: ubuntu-latest
     steps:
+      - name: Show OUTPUTS value
+        run: |
+          echo "$OUTPUTS"
+        env:
+          OUTPUTS: ${{ toJSON(needs.preprocess.outputs) }}
+
       - name: Show context attributes in actions/github-script@v4
-        if: ${{ env.RUNNER_DEBUG || env.STEP_DEBUG }}
+        if: ${{ env.RUNNER_DEBUG != null }}
         uses: actions/github-script@v4
         with:
           script: console.log(context)
