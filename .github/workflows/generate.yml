@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       TARGET_VERSION: ${{ github.event.pull_request.title }}
-      SKIP: ${{ steps.check-labes.outputs.SKIP }}
+      SKIP: ${{ steps.check-labels.outputs.SKIP == 'true' }}
     steps:
       - name: Show GitHub context
         if: ${{ env.RUNNER_DEBUG }}
