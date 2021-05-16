@@ -26,11 +26,10 @@ jobs:
     name: Main process
     needs:
       - preprocess
-    # if: ${{ fromJSON(needs.preprocess.outputs.CONTINUE) }}
+    if: ${{ fromJSON(needs.preprocess.outputs.CONTINUE) }}
     runs-on: ubuntu-latest
     steps:
       - name: Show OUTPUTS value
-        if: ${{ fromJSON(needs.preprocess.outputs.CONTINUE) }}
         run: |
           echo "$OUTPUTS"
           echo "$CONTINUE"
@@ -56,6 +55,6 @@ jobs:
 
       - name: Show the result
         env:
-          RETURN_CONTEXT: ${{ toJson(steps.return_context.outputs) }}
+          RETURN_CONTEXT: ${{ toJson(steps.add-comment.outputs) }}
         run: |
           echo "$RETURN_CONTEXT"
