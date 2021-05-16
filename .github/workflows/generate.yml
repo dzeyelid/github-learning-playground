@@ -17,7 +17,7 @@ jobs:
       TARGET_VERSION: ${{ github.event.pull_request.title }}
     steps:
       - name: Show GitHub context
-        if: ${{ secret.ACTIONS_STEP_DEBUG }}
+        if: ${{ secrets.ACTIONS_STEP_DEBUG }}
         run: |
           echo "$GITHUB_CONTEXT"
         env:
@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Show OUTPUTS content
-        if: ${{ secret.ACTIONS_STEP_DEBUG }}
+        if: ${{ secrets.ACTIONS_STEP_DEBUG }}
         run: |
           echo "$OUTPUTS"
         env:
