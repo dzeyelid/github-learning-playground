@@ -33,8 +33,8 @@ jobs:
 
   generate_code:
     name: Generate code and push them
-    # needs:
-    #   - preprocess
+    needs:
+      - preprocess
     if: ${{ ! needs.preprocess.outputs.SKIP }}
     runs-on: ubuntu-latest
     steps:
