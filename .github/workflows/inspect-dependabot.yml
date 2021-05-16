@@ -26,7 +26,7 @@ jobs:
     name: Main process
     needs:
       - preprocess
-    if: ${{ needs.preprocess.outputs.CONTINUE }}
+    if: ${{ fromJSON(needs.preprocess.outputs.CONTINUE) }}
     runs-on: ubuntu-latest
     steps:
       - name: Show OUTPUTS value
@@ -43,7 +43,8 @@ jobs:
         with:
           script: |
             console.log(context)
-            console.log(context.repository.owner)
+            console.log(context.payload.repository.owner)
+            console.log(context.repo)
 
       - name: Comment to the pull request with GITHUB_TOKEN
         uses: actions/github-script@v4
@@ -54,8 +55,8 @@ jobs:
           script: |
             const { BODY } = process.env
             return github.issues.createComment({
-              owner: context.repository.owner.name,
-              repo: context.repository.name,
+              owner: context.payload.repository.owner.name,
+              repo: context.payload.repository.name,
               issue_number: context.issue.number,
               body: BODY,
             });
