@@ -9,7 +9,7 @@ jobs:
     name: Check if this event from Dependabot
     runs-on: ubuntu-latest
     outputs:
-      SKIP: ${{ env.CONTINUE == 'true' }}
+      CONTINUE: ${{ env.CONTINUE == 'true' }}
     steps:
       - name: Show GitHub context
         if: ${{ env.RUNNER_DEBUG }}
