@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       TARGET_VERSION: ${{ github.event.pull_request.title }}
-      SKIP: ${{ steps.check-labels.outputs.SKIP == 'true' }}
+      SKIP: ${{ env.SKIP == 'true' }}
     steps:
       - name: Show GitHub context
         if: ${{ env.RUNNER_DEBUG }}
@@ -28,7 +28,7 @@ jobs:
         if: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, env.PULL_REQUEST_LABEL) }}
         run: |
           echo '::warning::This pull request event does not have valid label'
-          echo "::set-output name=SKIP::true"
+          echo 'SKIP::true' >> $GITHUB_ENV
 
   generate_code:
     name: Generate code and push them
