@@ -60,7 +60,6 @@ jobs:
           echo "$RETURN_CONTEXT"
 
       - name: Confirm Dependabot secrets
-        if: ${{ secrets.DEPENDABOT_SECRET != null }}
         env:
           DEPENDABOT_SECRET: ${{ secrets.DEPENDABOT_SECRET }}
         run: |
