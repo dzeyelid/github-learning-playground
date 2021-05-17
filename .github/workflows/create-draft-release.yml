@@ -7,6 +7,9 @@ on:
     types:
       - closed
 
+env:
+  PULL_REQUEST_LABEL: auto-generate
+
 jobs:
   preprocess:
     name: Check pull request
@@ -15,13 +18,10 @@ jobs:
       TARGET_VERSION: ${{ github.event.pull_request.title }}
       CONTINUE: ${{ env.CONTINUE != null && env.CONTINUE == 'true' }}
     steps:
-      - name: Check labels
-        if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, env.PULL_REQUEST_LABEL) }}
-        run: |
-          echo 'CONTINUE=true' >> $GITHUB_ENV
-
-      - name: Check merged status
-        if: ${{ env.CONTINUE != 'true' && github.event_name == 'pull_request' && github.event.pull_request.merged }}
+      - name: Check labels and merged status
+        if: ${{ github.event_name == 'pull_request' &&
+          contains(github.event.pull_request.labels.*.name, env.PULL_REQUEST_LABEL) &&
+          github.event.pull_request.merged }}
         run: |
           echo 'CONTINUE=true' >> $GITHUB_ENV
 
