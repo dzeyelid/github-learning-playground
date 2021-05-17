@@ -13,25 +13,23 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       TARGET_VERSION: ${{ github.event.pull_request.title }}
-      SKIP: ${{ env.SKIP == 'true' }}
+      CONTINUE: ${{ env.CONTINUE != null && env.CONTINUE == 'true' }}
     steps:
       - name: Check labels
-        if: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, env.PULL_REQUEST_LABEL) }}
+        if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, env.PULL_REQUEST_LABEL) }}
         run: |
-          echo '::warning::This pull request event does not have valid label'
-          echo 'SKIP=true' >> $GITHUB_ENV
+          echo 'CONTINUE=true' >> $GITHUB_ENV
 
       - name: Check merged status
-        if: ${{ env.SKIP != 'true' && ! github.event.pull_request.merged }}
+        if: ${{ env.CONTINUE != 'true' && github.event_name == 'pull_request' && github.event.pull_request.merged }}
         run: |
-          echo '::warning::This pull request has been just closed without merge'
-          echo 'SKIP=true' >> $GITHUB_ENV
+          echo 'CONTINUE=true' >> $GITHUB_ENV
 
   create_draft_release:
     name: Create draft release
     needs:
       - preprocess
-    if: ${{ ! needs.preprocess.outputs.SKIP }}
+    if: ${{ fromJSON(needs.preprocess.outputs.CONTINUE) }}
     runs-on: ubuntu-latest
     steps:
       - name: Create draft release
@@ -49,7 +47,7 @@ jobs:
     name: Delete working branch
     needs:
       - preprocess
-    if: ${{ ! needs.preprocess.outputs.SKIP }}
+    if: ${{ fromJSON(needs.preprocess.outputs.CONTINUE) }}
     runs-on: ubuntu-latest
     steps:
       - name: Delete working branch
