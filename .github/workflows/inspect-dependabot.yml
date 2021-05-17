@@ -58,3 +58,10 @@ jobs:
           RETURN_CONTEXT: ${{ toJson(steps.add-comment.outputs) }}
         run: |
           echo "$RETURN_CONTEXT"
+
+      - name: Confirm Dependabot secrets
+        if: ${{ secrets.DEPENDABOT_SECRET != null }}
+        env:
+          DEPENDABOT_SECRET: ${{ secrets.DEPENDABOT_SECRET }}
+        run: |
+          echo "$DEPENDABOT_SECRET"
