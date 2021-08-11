@@ -1,4 +1,4 @@
-name: check_run trigger sample
+name: A check_run trigger sample
 on: check_run
 
 jobs:
