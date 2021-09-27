@@ -1,0 +1,19 @@
+name: 'DevOps workshop: workflow_dispatch trigger'
+
+on:
+  workflow_dispatch:
+    inputs:
+      message:
+        description: 'Message you would like to show'
+        required: true
+        default: world
+
+jobs:
+  scheduled:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Echo a message
+        run: echo Hello, ${{ INPUT_MESSAGE }}!
+        env:
+          INPUT_MESSAGE: ${{ github.event.inputs.message }}
