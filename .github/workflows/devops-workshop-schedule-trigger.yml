@@ -2,7 +2,7 @@ name: 'DevOps workshop: schedule cron trigger'
 
 on:
   schedule:
-    - cron: '2 0 28 * *'
+    - cron: '2 */4 27,28 * *'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
