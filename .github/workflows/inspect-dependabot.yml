@@ -38,7 +38,7 @@ jobs:
           CONTINUE: ${{ needs.preprocess.outputs.CONTINUE }}
 
       - name: Comment to the pull request with GITHUB_TOKEN
-        uses: actions/github-script@v4.0.2
+        uses: actions/github-script@v5
         id: add-comment
         env:
           BODY: ${{ github.event.action }}
