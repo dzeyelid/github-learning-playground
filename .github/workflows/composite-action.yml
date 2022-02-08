@@ -6,10 +6,10 @@ jobs:
     name: A job to say hello
     steps:
       - uses: actions/checkout@v2
+      - id: foo
+        uses: dzeyelid/hello-world-composite-action@dzeyelid/issue1
+        with:
+          who-to-greet: 'Mona the Octocat'
+      - run: echo random-number ${{ steps.foo.outputs.random-number }}
+        shell: bash
       - uses: dzeyelid/hello-world-composite-action/say-hooray@dzeyelid/issue1
-      # - id: foo
-      #   uses: dzeyelid/hello-world-composite-action@dzeyelid/issue1
-      #   with:
-      #     who-to-greet: 'Mona the Octocat'
-      # - run: echo random-number ${{ steps.foo.outputs.random-number }}
-      #   shell: bash
