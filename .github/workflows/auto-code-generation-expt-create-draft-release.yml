@@ -11,25 +11,11 @@ env:
   PULL_REQUEST_LABEL: auto-generate
 
 jobs:
-  preprocess:
-    name: Check pull request
-    runs-on: ubuntu-latest
-    outputs:
-      TARGET_VERSION: ${{ github.event.pull_request.title }}
-      CONTINUE: ${{ env.CONTINUE != null && env.CONTINUE == 'true' }}
-    steps:
-      - name: Check labels and merged status
-        if: ${{ github.event_name == 'pull_request' &&
-          contains(github.event.pull_request.labels.*.name, env.PULL_REQUEST_LABEL) &&
-          github.event.pull_request.merged }}
-        run: |
-          echo 'CONTINUE=true' >> $GITHUB_ENV
-
   create_draft_release:
     name: Create draft release
-    needs:
-      - preprocess
-    if: ${{ fromJSON(needs.preprocess.outputs.CONTINUE) }}
+    if: ${{ github.event_name == 'pull_request' &&
+          contains(github.event.pull_request.labels.*.name, env.PULL_REQUEST_LABEL) &&
+          github.event.pull_request.merged }}
     runs-on: ubuntu-latest
     steps:
       - name: Create draft release
@@ -45,9 +31,9 @@ jobs:
 
   delete_working_branch:
     name: Delete working branch
-    needs:
-      - preprocess
-    if: ${{ fromJSON(needs.preprocess.outputs.CONTINUE) }}
+    if: ${{ github.event_name == 'pull_request' &&
+          contains(github.event.pull_request.labels.*.name, env.PULL_REQUEST_LABEL) &&
+          github.event.pull_request.merged }}
     runs-on: ubuntu-latest
     steps:
       - name: Delete working branch

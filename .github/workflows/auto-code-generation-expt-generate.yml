@@ -10,37 +10,13 @@ env:
   PULL_REQUEST_LABEL: auto-generate
 
 jobs:
-  preprocess:
-    name: Check pull request
-    runs-on: ubuntu-latest
-    outputs:
-      TARGET_VERSION: ${{ github.event.pull_request.title }}
-      CONTINUE: ${{ env.CONTINUE != null && env.CONTINUE == 'true' }}
-    steps:
-      - name: Show GitHub context
-        run: |
-          echo "$GITHUB_CONTEXT"
-        env:
-          GITHUB_CONTEXT: ${{ toJSON(github) }}
-
-      - name: Check labels
-        if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, env.PULL_REQUEST_LABEL) }}
-        run: |
-          echo 'CONTINUE=true' >> $GITHUB_ENV
-
   generate_code:
     name: Generate code and push them
-    needs:
-      - preprocess
-    if: ${{ fromJSON(needs.preprocess.outputs.CONTINUE) }}
+    if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, env.PULL_REQUEST_LABEL) }}
     runs-on: ubuntu-latest
+    env:
+      TARGET_VERSION: ${{ github.event.pull_request.title }}
     steps:
-      - name: Show OUTPUTS content
-        run: |
-          echo "$OUTPUTS"
-        env:
-          OUTPUTS: ${{ toJSON(needs.preprocess.outputs) }}
-
       - uses: actions/checkout@v2
         with:
           persist-credentials: false
@@ -49,15 +25,13 @@ jobs:
       - name: Update version file
         run: |
           echo $VERSION > version.txt
-        env:
-          VERSION: ${{ needs.preprocess.outputs.TARGET_VERSION }}
 
       - name: Create a commit
         run: |
           git branch
           git config user.name "Auto code generator"
           git add version.txt
-          git commit -m "Generate code for ${{ needs.preprocess.outputs.TARGET_VERSION }}"
+          git commit -m "Generate code for ${TARGET_VERSION}"
 
       - name: Push changes
         uses: ad-m/github-push-action@master
