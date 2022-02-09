@@ -2,9 +2,8 @@ name: 'Auto code generation experiment (2): Generate code'
 
 on:
   pull_request:
-    types:
-      - labeled
-      - edited
+    branches:
+      - auto-generated
 
 env:
   PULL_REQUEST_LABEL: auto-generate
