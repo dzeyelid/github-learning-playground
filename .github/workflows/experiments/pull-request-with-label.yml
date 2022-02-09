@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  runs-on: ubuntu-latest
-  steps:
-    - run: echo 'Processed a workflow under a sub directory'
+  show-result:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'Processed a workflow under a sub directory'
