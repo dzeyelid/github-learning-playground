@@ -5,37 +5,16 @@ on:
     types: ["opened", "synchronize", "reopened", "edited"]
 
 jobs:
-  preprocess:
-    name: Check if this event from Dependabot
+  main:
+    name: Experiment Dependabot's trigger
+    if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'dependencies') }}
     runs-on: ubuntu-latest
-    outputs:
-      CONTINUE: ${{ env.CONTINUE != null && env.CONTINUE == 'true' }}
     steps:
-      - name: Show GitHub context
+      - name: 'Debug: Show GitHub context'
         run: |
           echo "$GITHUB_CONTEXT"
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
-
-      - name: Check label
-        if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'dependencies') }}
-        run: |
-          echo 'CONTINUE=true' >> $GITHUB_ENV
-
-  main:
-    name: Main process
-    needs:
-      - preprocess
-    if: ${{ fromJSON(needs.preprocess.outputs.CONTINUE) }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Show OUTPUTS value
-        run: |
-          echo "$OUTPUTS"
-          echo "$CONTINUE"
-        env:
-          OUTPUTS: ${{ toJSON(needs.preprocess.outputs) }}
-          CONTINUE: ${{ needs.preprocess.outputs.CONTINUE }}
 
       - name: Comment to the pull request with GITHUB_TOKEN
         uses: actions/github-script@v4.0.2

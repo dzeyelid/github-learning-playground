@@ -1,5 +1,9 @@
 name: 'Experiment: Composite action'
-on: [push]
+on:
+  push:
+   paths:
+     - .github/workflows/experiment-composite-action.yml
+  workflow_dispatch:
 
 jobs:
   hello_world_job:
