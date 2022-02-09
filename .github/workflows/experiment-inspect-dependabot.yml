@@ -6,13 +6,11 @@ on:
 
 jobs:
   main:
-    name: Main process
-    needs:
-      - preprocess
+    name: Experiment Dependabot's trigger
     if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'dependencies') }}
     runs-on: ubuntu-latest
     steps:
-      - name: Show GitHub context
+      - name: 'Debug: Show GitHub context'
         run: |
           echo "$GITHUB_CONTEXT"
         env:
