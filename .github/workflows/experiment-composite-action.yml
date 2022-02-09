@@ -1,3 +1,4 @@
+name: 'Experiment: Composite action'
 on: [push]
 
 jobs:

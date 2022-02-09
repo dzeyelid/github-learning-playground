@@ -1,4 +1,4 @@
-name: Inspect Dependabot
+name: 'Experiment: Inspect Dependabot'
 
 on:
   pull_request:
