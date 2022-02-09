@@ -1,4 +1,4 @@
-name: Receive repository dispatch event
+name: 'Auto code generation experiment (1): Receive repository dispatch event'
 
 on:
   repository_dispatch:

@@ -1,4 +1,4 @@
-name: Create draft release
+name: 'Auto code generation experiment (3): Create draft release'
 
 on:
   pull_request:
