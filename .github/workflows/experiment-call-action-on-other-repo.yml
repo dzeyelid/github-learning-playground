@@ -16,7 +16,7 @@ jobs:
       with:
         repository: ${{ github.event.inputs.repo }}
     - uses: ./action-a
-      name: Call the action in the checked out repository
+      name: Call the action in the checked-out repository
       with:
         MY_NAME: "Baymax!"
     - uses: dzeyelid/hello-github-actions/action-a@main
