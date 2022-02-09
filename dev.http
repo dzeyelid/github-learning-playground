@@ -1,0 +1,24 @@
+@owner=dzeyelid
+@repo=github-learning-playground
+
+###
+
+# @name latestRelease
+GET https://api.github.com/repos/{{owner}}/{{repo}}/releases/latest
+Accept: application/vnd.github.v3+json
+Content-Type: application/json
+
+###
+
+# @name repositoryDispatchRequest
+POST https://api.github.com/repos/{{owner}}/{{repo}}/dispatches
+Accept: application/vnd.github.v3+json
+Content-Type: application/json
+Authorization: token {{github-pat}}
+
+{
+  "event_type": "create-pull-request",
+  "client_payload": {
+    "origin_ref": "refs/tags/{{latestRelease.response.body.tag_name}}"
+  }
+}
