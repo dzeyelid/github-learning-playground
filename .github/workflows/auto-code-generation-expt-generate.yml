@@ -2,17 +2,23 @@ name: 'Auto code generation experiment (2): Generate code'
 
 on:
   pull_request:
-    branches:
-      - auto-generated
+    types:
+      - labeled
+      - opened
+      - edited
+      - reopened
+      - synchronize
 
 jobs:
   generate_code:
     name: Generate code and push them
-    if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, env.PULL_REQUEST_LABEL) }}
     runs-on: ubuntu-latest
     env:
       TARGET_VERSION: ${{ github.event.pull_request.title }}
       PULL_REQUEST_LABEL: auto-generate
+      PULL_REQUEST_BRANCH_NAME: auto-generated
+    if: ${{ github.ref == 'refs/heads/${{ env.PULL_REQUEST_BRANCH_NAME }}' }}
+    # if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, env.PULL_REQUEST_LABEL) }}
     steps:
       - uses: actions/checkout@v2
         with:
