@@ -1,4 +1,4 @@
-name: Generate code
+name: 'Auto code generation experiment (2): Generate code'
 
 on:
   pull_request:

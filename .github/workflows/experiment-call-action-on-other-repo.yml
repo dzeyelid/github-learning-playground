@@ -1,0 +1,25 @@
+name: 'Experiment: Call an action on other repository'
+
+on:
+  workflow_dispatch:
+    inputs:
+      repo:
+        description: Repository name to you would like to checkout
+        required: true
+        default: 'dzeyelid/hello-github-actions'
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      name: Checkout `${{ github.event.inputs.repo }}` repository
+      with:
+        repository: ${{ github.event.inputs.repo }}
+    - uses: ./action-a
+      name: Call the action in the checked-out repository
+      with:
+        MY_NAME: "Baymax!"
+    - uses: dzeyelid/hello-github-actions/action-a@main
+      name: Use an action by specifying by uses
+      with:
+        MY_NAME: "Baymax 2!"
