@@ -22,7 +22,9 @@ jobs:
     outputs:
       PULL_REQUEST_LABEL: auto-generate
     steps:
-      - run: jq '${{ toJSON(github) }}'
+      - run: jq $GITHUB_CONTEXT
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
 
   generate_code:
     name: Generate code

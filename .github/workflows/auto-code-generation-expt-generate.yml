@@ -8,7 +8,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  actions: write
+  repository-projects: write
 
 jobs:
   generate_code:
