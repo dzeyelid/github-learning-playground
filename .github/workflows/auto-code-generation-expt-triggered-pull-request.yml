@@ -1,4 +1,4 @@
-name: 'Auto code generation experiment (2): Triggered by pull request'
+name: 'Auto code generation experiment: Triggered by pull request'
 
 on:
   pull_request:
@@ -14,6 +14,7 @@ on:
 
 jobs:
   check:
+    runs-on: ubuntu-latest
     steps:
       - run: echo ${{ toJSON(github) }}
   # generate_code:
