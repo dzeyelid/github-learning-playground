@@ -15,9 +15,8 @@ on:
 jobs:
   check_label:
     name: Check label for auto code generation
-    # if: github.ref == 'refs/heads/auto-generated' &&
-    #   contains(github.event.pull_request.labels.*.name, 'auto-generate')
-    if: contains(github.event.pull_request.labels.*.name, 'auto-generate')
+    if: github.ref == 'refs/heads/auto-generated' &&
+      contains(github.event.pull_request.labels.*.name, 'auto-generate')
     runs-on: ubuntu-latest
     outputs:
       PULL_REQUEST_LABEL: auto-generate
