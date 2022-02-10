@@ -1,37 +1,20 @@
 name: 'Auto code generation experiment (2): Generate code'
 
 on:
-  pull_request:
-    branches:
-      - main
-    types:
-      - labeled
-      - opened
-      - edited
-      - reopened
-      - synchronize
+  workflow_call:
 
 concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  PULL_REQUEST_LABEL: auto-generate
-  PULL_REQUEST_BRANCH_NAME: auto-generated
-
 jobs:
-  check:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo ${{ toJSON(github) }}
-
   generate_code:
     name: Generate code and push them
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       TARGET_VERSION: ${{ github.event.pull_request.title }}
-    # if: ${{ github.ref == 'refs/heads/${{ github.env.PULL_REQUEST_BRANCH_NAME }}' }}
-    if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, github.env.PULL_REQUEST_LABEL) }}
     steps:
       - uses: actions/checkout@v2
         with:
