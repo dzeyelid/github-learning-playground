@@ -9,8 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    env:
-      TARGET_VERSION: ${{ github.event.pull_request.title }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -19,7 +17,9 @@ jobs:
 
       - name: Update version file
         run: |
-          echo $VERSION > version.txt
+          echo $TARGET_VERSION > version.txt
+        env:
+          TARGET_VERSION: ${{ github.event.pull_request.title }}
 
       - name: Create a commit
         run: |
