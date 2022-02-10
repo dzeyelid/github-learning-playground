@@ -21,6 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       PULL_REQUEST_LABEL: auto-generate
+    steps:
+      - run: jq "${{ toJSON(github) }}"
 
   generate_code:
     name: Generate code
