@@ -13,13 +13,25 @@ on:
       - closed
 
 jobs:
-  check:
+  check_label:
+    name: Check label for auto code generation
+    # if: github.ref == 'refs/heads/auto-generated' &&
+    #   contains(github.event.pull_request.labels.*.name, 'auto-generate')
+    if: contains(github.event.pull_request.labels.*.name, 'auto-generate')
     runs-on: ubuntu-latest
-    steps:
-      - run: echo ${{ toJSON(github) }}
-  # generate_code:
-  #   name: Generate code
-  #   if: github.event_type
+    outputs:
+      PULL_REQUEST_LABEL: auto-generate
 
-  # create_draft_release:
-  #   name: Create draft release
+  generate_code:
+    name: Generate code
+    needs:
+      - check_label
+    if: github.event.action != 'closed'
+    uses: ./.github/workflows/auto-code-generation-expt-generate.yml
+
+  create_draft_release:
+    name: Create draft release
+    needs:
+      - check_label
+    if: github.event.action == 'closed'
+    uses: ./.github/workflows/auto-code-generation-expt-create-draft-release.yml
