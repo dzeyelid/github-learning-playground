@@ -1,0 +1,24 @@
+name: 'Auto code generation experiment (2): Triggered by pull request'
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - labeled
+      - opened
+      - edited
+      - reopened
+      - synchronize
+      - closed
+
+jobs:
+  check:
+    steps:
+      - run: echo ${{ toJSON(github) }}
+  # generate_code:
+  #   name: Generate code
+  #   if: github.event_type
+
+  # create_draft_release:
+  #   name: Create draft release
