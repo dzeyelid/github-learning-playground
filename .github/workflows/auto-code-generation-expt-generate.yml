@@ -23,7 +23,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - run: echo ${{ toJSON(github.env) }}
+      - run: echo ${{ toJSON(github) }}
 
   generate_code:
     name: Generate code and push them
