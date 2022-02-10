@@ -3,9 +3,6 @@ name: 'Auto code generation experiment (2): Generate code'
 on:
   workflow_call:
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-
 jobs:
   generate_code:
     name: Generate code and push them
