@@ -12,10 +12,14 @@ on:
       - synchronize
       - closed
 
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   check_label:
     name: Check label for auto code generation
-    if: github.ref == 'refs/heads/auto-generated' &&
+    if: github.head_ref == 'auto-generated' &&
       contains(github.event.pull_request.labels.*.name, 'auto-generate')
     runs-on: ubuntu-latest
     outputs:
