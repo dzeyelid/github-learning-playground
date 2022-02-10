@@ -25,8 +25,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TARGET_VERSION: ${{ github.event.pull_request.title }}
-    if: ${{ github.ref == 'refs/heads/${{ github.env.PULL_REQUEST_BRANCH_NAME }}' }}
-    # if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, env.PULL_REQUEST_LABEL) }}
+    # if: ${{ github.ref == 'refs/heads/${{ github.env.PULL_REQUEST_BRANCH_NAME }}' }}
+    if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, github.env.PULL_REQUEST_LABEL) }}
     steps:
       - uses: actions/checkout@v2
         with:
