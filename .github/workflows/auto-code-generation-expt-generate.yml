@@ -10,9 +10,14 @@ on:
       - edited
       - reopened
       - synchronize
+
 concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
+
+env:
+  PULL_REQUEST_LABEL: auto-generate
+  PULL_REQUEST_BRANCH_NAME: auto-generated
 
 jobs:
   generate_code:
@@ -20,10 +25,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TARGET_VERSION: ${{ github.event.pull_request.title }}
-      PULL_REQUEST_LABEL: auto-generate
-      PULL_REQUEST_BRANCH_NAME: auto-generated
-    # if: ${{ github.ref == 'refs/heads/${{ env.PULL_REQUEST_BRANCH_NAME }}' }}
-    if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, env.PULL_REQUEST_LABEL) }}
+    if: ${{ github.ref == 'refs/heads/${{ github.env.PULL_REQUEST_BRANCH_NAME }}' }}
+    # if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, env.PULL_REQUEST_LABEL) }}
     steps:
       - uses: actions/checkout@v2
         with:
