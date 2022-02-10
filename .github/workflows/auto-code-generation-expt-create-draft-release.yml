@@ -1,21 +1,12 @@
 name: 'Auto code generation experiment (3): Create draft release'
 
 on:
-  pull_request:
-    branches:
-      - main
-    types:
-      - closed
-
-env:
-  PULL_REQUEST_LABEL: auto-generate
+  workflow_call:
 
 jobs:
   create_draft_release:
     name: Create draft release
-    if: ${{ github.event_name == 'pull_request' &&
-          contains(github.event.pull_request.labels.*.name, env.PULL_REQUEST_LABEL) &&
-          github.event.pull_request.merged }}
+    if: github.event.pull_request.merged
     runs-on: ubuntu-latest
     steps:
       - name: Create draft release
@@ -31,9 +22,7 @@ jobs:
 
   delete_working_branch:
     name: Delete working branch
-    if: ${{ github.event_name == 'pull_request' &&
-          contains(github.event.pull_request.labels.*.name, env.PULL_REQUEST_LABEL) &&
-          github.event.pull_request.merged }}
+    if: github.event.pull_request.merged
     runs-on: ubuntu-latest
     steps:
       - name: Delete working branch
