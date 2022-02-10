@@ -20,6 +20,11 @@ env:
   PULL_REQUEST_BRANCH_NAME: auto-generated
 
 jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ${{ toJSON(github.env) }}
+
   generate_code:
     name: Generate code and push them
     runs-on: ubuntu-latest
