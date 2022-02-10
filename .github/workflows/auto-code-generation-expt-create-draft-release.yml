@@ -26,6 +26,7 @@ jobs:
     name: Delete working branch
     if: github.event.pull_request.merged
     runs-on: ubuntu-latest
+    continue-on-error: true
     permissions:
       contents: write
     steps:
