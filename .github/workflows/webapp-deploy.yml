@@ -36,12 +36,9 @@ jobs:
       WORKING_DIR: src/webapp
       AZURE_WEBAPP_PACKAGE_PATH: ${{ github.workspace }}/outputs
     steps:
-    - run: |
-        echo $CONTEXT | jq
-        echo $INPUTS | jq
+    - run: echo $CONTEXT | jq
       env:
         CONTEXT: ${{ toJSON(github) }}
-        INPUTS: ${{ toJSON(github.event.inputs) }}
       shell: bash
 
     - uses: actions/checkout@v2
