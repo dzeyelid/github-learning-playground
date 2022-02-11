@@ -17,11 +17,11 @@ on:
     inputs:
       azure_resource_group:
         description: Azure Resource Group name
-        default: null
+        default: ''
         type: string
       azure_webapp_name:
         description: Azure Web app name
-        default: null
+        default: ''
         type: string
 
 env:
@@ -36,10 +36,14 @@ jobs:
       WORKING_DIR: src/webapp
       AZURE_WEBAPP_PACKAGE_PATH: ${{ github.workspace }}/outputs
     steps:
-    - run: echo $CONTEXT | jq
+    - run: |
+        echo $CONTEXT | jq
+        echo $INPUTS | jq
       env:
-        CONTEXT: ${{ tojson(github) }}
+        CONTEXT: ${{ toJSON(github) }}
+        INPUTS: ${{ toJSON(inputs) }}
       shell: bash
+
     - uses: actions/checkout@v2
     - name: Setup .NET Core SDK ${{ env.DOTNET_VERSION }}
       uses: actions/setup-dotnet@v1
