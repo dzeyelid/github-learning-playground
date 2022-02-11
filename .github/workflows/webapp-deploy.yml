@@ -14,11 +14,20 @@ on:
     - synchronize
     - reopened
   workflow_dispatch:
+    inputs:
+      azure_resource_group:
+        description: Azure Resource Group name
+        default: null
+        type: string
+      azure_webapp_name:
+        description: Azure Web app name
+        default: null
+        type: string
 
 env:
-  DOTNET_VERSION: '3.1.x'
-  AZURE_WEBAPP_NAME: 'app-playground20210216'
-  RESOURCE_GROUP: 'rg-playground20210216-web'
+  DOTNET_VERSION: '6.0.x'
+  RESOURCE_GROUP: ${{ inputs.azure_resource_group || secrets.AZURE_RESOURCE_GROUP }}
+  AZURE_WEBAPP_NAME: ${{ inputs.azure_webapp_name || secrets.AZURE_WEBAPP_NAME }}
 
 jobs:
   build-and-deploy:
@@ -31,7 +40,7 @@ jobs:
       env:
         CONTEXT: ${{ tojson(github) }}
       shell: bash
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v2
     - name: Setup .NET Core SDK ${{ env.DOTNET_VERSION }}
       uses: actions/setup-dotnet@v1
       with:
