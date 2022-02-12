@@ -20,14 +20,12 @@ on:
         required: true
 
 env:
-  AZURE_RESOURCE_GROUP_NAME: ${{ inputs.azure_resource_group_name || secrets.AZURE_RESOURCE_GROUP_NAME }}
-  AZURE_WEBAPP_NAME: ${{ inputs.azure_webapp_name || secrets.AZURE_WEBAPP_NAME }}
+  AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+  AZURE_WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
   SLOT_NAME: ${{ secrets.AZURE_WEBAPP_SLOT_NAME }}
 
 jobs:
   deploy-to-staging:
-    needs:
-      - build
     name: Deploy to staging
     runs-on: windows-latest
     steps:
@@ -57,6 +55,7 @@ jobs:
       url: https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/
     needs:
       - deploy-to-staging
+      - test
     runs-on: windows-latest
     if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || inputs.is_production }}
     steps:

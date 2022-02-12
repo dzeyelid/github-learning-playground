@@ -20,14 +20,21 @@ on:
         default: false
         type: boolean
 
+env:
+  DOTNET_VERSION: '6.0.x'
+
 jobs:
   build:
     uses: ./.github/workflows/webapp-build.yml
+    with:
+      dotnet_version: ${{ env.DOTNET_VERSION }}
 
-  # test:
-  #   uses: ./.github/workflows/webapp-test.yml
+  test:
+    uses: ./.github/workflows/webapp-test.yml
+    with:
+      dotnet_version: ${{ env.DOTNET_VERSION }}
 
-  deploy-to-staging:
+  deploy:
     needs:
       - build
     uses: ./.github/workflows/webapp-deploy.yml
@@ -44,7 +51,7 @@ jobs:
   #     - build
   #     - test
   #   if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || inputs.is_production }}
-  #   uses: ./.github/workflows/webapp-deploy.yml
+  #   uses: ./.github/workflows/webapp-deploy-to-production.yml
   #   with:
   #     webapp_archived_app_name: ${{ needs.build.outputs.webapp_archived_app_name }}
   #     is_production: ${{ github.event.inputs.is_production == 'true' }}  # Avoid this issue: https://github.com/github/feedback/discussions/9343
