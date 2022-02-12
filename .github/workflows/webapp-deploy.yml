@@ -73,7 +73,8 @@ jobs:
   #     - build
   #   runs-on: windows-latest
 
-  deploy:
+  deploy-to-staging:
+    name: Deploy to staging
     needs:
       - build
       # - test
@@ -98,11 +99,26 @@ jobs:
       - name: 'Deploy to staging'
         uses: azure/webapps-deploy@v2
         with: 
-          app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
           package: .  # Indicate the directory includes downloaded artifacts
           slot-name: ${{ env.SLOT_NAME }}
 
+  deploy-to-production:
+    name: Deploy to production
+    environment:
+      - webapp_production
+    needs:
+      - deploy-to-staging
+    runs-on: windows-latest
+    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event.inputs.is_production }}
+    steps:
+      # Login
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       # Swap slot to production when the updates are merged to the main branch
       - name: 'Swap slot from staging'
-        if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event.inputs.is_production }}
+        environment:
         run: az webapp deployment slot swap --slot ${{ env.SLOT_NAME }} --name "${{ env.AZURE_WEBAPP_NAME }}" --resource-group "${{ env.AZURE_RESOURCE_GROUP }}"
