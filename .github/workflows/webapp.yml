@@ -17,7 +17,10 @@ on:
     inputs:
       environment:
         description: Select environment
-        type: environment
+        type: choice
+        options:
+          - staging
+          - production  
 
 jobs:
   build:
@@ -33,11 +36,10 @@ jobs:
   deploy-to-staging:
     needs:
       - build
-    if: ${{ github.event_name != 'push' || !contains(github.event.inputs.environment, 'production') }}
+    if: ${{ github.event_name != 'push' || github.event.inputs.environment == 'staging') }}
     uses: ./.github/workflows/webapp-deploy.yml
     with:
       webapp_archived_app_name: ${{ needs.build.outputs.webapp_archived_app_name }}
-      environment: ${{ github.event.inputs.environment || 'webapp_staging'  }}
     secrets:
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
       AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
@@ -47,11 +49,11 @@ jobs:
     needs:
       - build
       - test
-    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || contains(github.event.inputs.environment, 'production') }}
+    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event.inputs.environment == 'production' }}
     uses: ./.github/workflows/webapp-deploy.yml
     with:
       webapp_archived_app_name: ${{ needs.build.outputs.webapp_archived_app_name }}
-      environment: ${{ github.event.inputs.environment || 'webapp_production' }}
+      is_production: true
     secrets:
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
       AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}

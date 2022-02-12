@@ -7,10 +7,10 @@ on:
         description: The archived app name for Web app
         required: true
         type: string
-      environment:
-        description: Environment
-        required: true
-        type: string
+      is_production:
+        description: For production or not
+        default: false
+        type: boolean
     secrets:
       AZURE_CREDENTIALS:
         required: true
@@ -19,17 +19,32 @@ on:
       AZURE_WEBAPP_NAME:
         required: true
 
-env:
-  AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-  AZURE_WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
-  SLOT_NAME: ${{ secrets.AZURE_WEBAPP_SLOT_NAME }}
-
 jobs:
+  select_environment:
+    name: Select environment
+    runs-on: windows-latest
+    outputs:
+      environment: ${{ steps.select_enviroment.outputs.result }}
+    steps:
+      - name: Select environment
+        id: select_enviroment
+        uses: actions/github-script@v6.0.0
+        with:
+          result-encoding: string
+          script: |
+            console.log(context)
+            const { is_production } = context.inputs
+            const result = is_production ? 'webapp_production' : 'webapp_staging'
+            console.log(result)
+            return result
+
   deploy-to-staging:
     name: Deploy to staging
+    needs:
+      - select_environment
     environment:
-      name: ${{ inputs.environment }}
-      url: https://${{ env.AZURE_WEBAPP_NAME }}-${{ env.SLOT_NAME }}.azurewebsites.net/
+      name: ${{ needs.select_environment.outputs.environment }}
+      url: https://${{ secrets.AZURE_WEBAPP_NAME }}-${{ secrets.AZURE_WEBAPP_SLOT_NAME }}.azurewebsites.net/
     runs-on: windows-latest
     steps:
       - name: Download artifacts
@@ -47,19 +62,20 @@ jobs:
       - name: 'Deploy to staging'
         uses: azure/webapps-deploy@v2
         with: 
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
           package: .  # Indicate the directory includes downloaded artifacts
-          slot-name: ${{ env.SLOT_NAME }}
+          slot-name: ${{ secrets.AZURE_WEBAPP_SLOT_NAME }}
 
   deploy-to-production:
     name: Deploy to Azure Web app
-    environment:
-      name: ${{ inputs.environment }}
-      url: https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/
     needs:
+      - select_environment
       - deploy-to-staging
+    environment:
+      name: ${{ needs.select_environment.outputs.environment }}
+      url: https://${{ secrets.AZURE_WEBAPP_NAME }}.azurewebsites.net/
     runs-on: windows-latest
-    if: ${{ contains(inputs.environment, 'production') }}
+    if: ${{ inputs.is_production }}
     steps:
       # Login
       - name: 'Login via Azure CLI'
@@ -69,4 +85,4 @@ jobs:
 
       # Swap slot to production when the updates are merged to the main branch
       - name: 'Swap slot from staging'
-        run: az webapp deployment slot swap --slot ${{ env.SLOT_NAME }} --name "${{ env.AZURE_WEBAPP_NAME }}" --resource-group "${{ env.AZURE_RESOURCE_GROUP_NAME }}"
+        run: az webapp deployment slot swap --slot ${{ secrets.AZURE_WEBAPP_SLOT_NAME }} --name "${{ secrets.AZURE_WEBAPP_NAME }}" --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}"
