@@ -38,7 +38,7 @@ jobs:
             console.log(result)
             return result
           env:
-            IS_PRODUCTION: inputs.is_production
+            IS_PRODUCTION: ${{ inputs.is_production }}
 
   deploy-to-staging:
     name: Deploy to staging
