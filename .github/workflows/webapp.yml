@@ -35,12 +35,12 @@ jobs:
     needs:
       - build
     uses: ./.github/workflows/webapp-deploy.yml
-    # with:
-    #   webapp_archived_app_name: ${{ needs.build.outputs.webapp_archived_app_name }}
-    #   azure_resource_group_name: ${{ github.event.inputs.azure_resource_group_name }}
-    #   azure_webapp_name: ${{ github.event.inputs.azure_webapp_name }}
-    #   is_production: ${{ github.event.inputs.is_production }}
-    # secrets:
-    #   AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
-    #   AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-    #   AZURE_WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
+    with:
+      webapp_archived_app_name: ${{ needs.build.outputs.webapp_archived_app_name }}
+      azure_resource_group_name: ${{ github.event.inputs.azure_resource_group_name }}
+      azure_webapp_name: ${{ github.event.inputs.azure_webapp_name }}
+      is_production: ${{ github.event.inputs.is_production }}
+    secrets:
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+      AZURE_WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
