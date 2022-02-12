@@ -20,19 +20,16 @@ on:
         default: false
         type: boolean
 
-env:
-  DOTNET_VERSION: '6.0.x'
-
 jobs:
   build:
     uses: ./.github/workflows/webapp-build.yml
     with:
-      dotnet_version: ${{ env.DOTNET_VERSION }}
+      dotnet_version: '6.0.x'
 
   test:
     uses: ./.github/workflows/webapp-test.yml
     with:
-      dotnet_version: ${{ env.DOTNET_VERSION }}
+      dotnet_version: '6.0.x'
 
   deploy:
     needs:
