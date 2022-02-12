@@ -23,9 +23,6 @@ on:
         default: false
         type: boolean
 
-env:
-  IS_PRODUCTION: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || contains(inputs.environment, 'production') }}
-
 jobs:
   build:
     uses: ./.github/workflows/webapp-build.yml
@@ -40,7 +37,7 @@ jobs:
   deploy-to-staging:
     needs:
       - build
-    if: ${{ ! env.IS_PRODUCTION }}
+    if: ${{ github.event_name != 'push' || !contains(inputs.environment, 'production') }}
     uses: ./.github/workflows/webapp-deploy.yml
     with:
       webapp_archived_app_name: ${{ needs.build.outputs.webapp_archived_app_name }}
@@ -54,7 +51,7 @@ jobs:
     needs:
       - build
       - test
-    if: ${{ env.IS_PRODUCTION }}
+    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || contains(inputs.environment, 'production') }}
     uses: ./.github/workflows/webapp-deploy.yml
     with:
       webapp_archived_app_name: ${{ needs.build.outputs.webapp_archived_app_name }}
