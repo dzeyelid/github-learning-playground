@@ -7,10 +7,10 @@ on:
         description: The archived app name for Web app
         required: true
         type: string
-      is_production:
-        description: Enable to deploy to production
-        default: false
-        type: boolean
+      environment:
+        description: Environment
+        required: true
+        type: environment
     secrets:
       AZURE_CREDENTIALS:
         required: true
@@ -25,9 +25,15 @@ env:
   SLOT_NAME: ${{ secrets.AZURE_WEBAPP_SLOT_NAME }}
 
 jobs:
-  deploy-to-staging:
-    name: Deploy to staging
+  deploy:
+    name: Deploy to Azure Web app
+    environment:
+      name: ${{ inputs.environment }}
+      url: https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/
+    needs:
+      - deploy-to-staging
     runs-on: windows-latest
+    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || inputs.is_production }}
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v2
@@ -48,23 +54,7 @@ jobs:
           package: .  # Indicate the directory includes downloaded artifacts
           slot-name: ${{ env.SLOT_NAME }}
 
-  deploy-to-production:
-    name: Deploy to production
-    environment:
-      name: webapp_production
-      url: https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/
-    needs:
-      - deploy-to-staging
-      - test
-    runs-on: windows-latest
-    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || inputs.is_production }}
-    steps:
-      # Login
-      - name: 'Login via Azure CLI'
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
       # Swap slot to production when the updates are merged to the main branch
       - name: 'Swap slot from staging'
+        if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || contains(inputs.environment, 'production') }}
         run: az webapp deployment slot swap --slot ${{ env.SLOT_NAME }} --name "${{ env.AZURE_WEBAPP_NAME }}" --resource-group "${{ env.AZURE_RESOURCE_GROUP_NAME }}"

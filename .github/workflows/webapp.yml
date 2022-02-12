@@ -15,10 +15,16 @@ on:
     - reopened
   workflow_dispatch:
     inputs:
+      environment:
+        description: Select environment
+        type: environment
       is_production:
         description: Enable to deploy to production
         default: false
         type: boolean
+
+env:
+  IS_PRODUCTION: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || contains(inputs.environment, 'production') }}
 
 jobs:
   build:
@@ -31,28 +37,30 @@ jobs:
     with:
       dotnet_version: '6.0.x'
 
-  deploy:
+  deploy-to-staging:
     needs:
       - build
+    if: ${{ ! env.IS_PRODUCTION }}
     uses: ./.github/workflows/webapp-deploy.yml
     with:
       webapp_archived_app_name: ${{ needs.build.outputs.webapp_archived_app_name }}
-      is_production: ${{ github.event.inputs.is_production == 'true' }}  # Avoid this issue: https://github.com/github/feedback/discussions/9343
+      environment: ${{ github.event.inputs.environment || 'webapp_staging'  }}
     secrets:
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
       AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
       AZURE_WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
 
-  # deploy-to-production:
-  #   needs:
-  #     - build
-  #     - test
-  #   if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || inputs.is_production }}
-  #   uses: ./.github/workflows/webapp-deploy-to-production.yml
-  #   with:
-  #     webapp_archived_app_name: ${{ needs.build.outputs.webapp_archived_app_name }}
-  #     is_production: ${{ github.event.inputs.is_production == 'true' }}  # Avoid this issue: https://github.com/github/feedback/discussions/9343
-  #   secrets:
-  #     AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
-  #     AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-  #     AZURE_WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
+  deploy-to-production:
+    needs:
+      - build
+      - test
+    if: ${{ env.IS_PRODUCTION }}
+    uses: ./.github/workflows/webapp-deploy.yml
+    with:
+      webapp_archived_app_name: ${{ needs.build.outputs.webapp_archived_app_name }}
+      environment: ${{ github.event.inputs.environment || 'webapp_production' }}
+      # is_production: ${{ github.event.inputs.is_production == 'true' }}  # Avoid this issue: https://github.com/github/feedback/discussions/9343
+    secrets:
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+      AZURE_WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
