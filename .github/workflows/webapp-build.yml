@@ -7,16 +7,14 @@ on:
         description: A archived app name for Azure Web app
         value: ${{ jobs.build.outputs.webapp_archived_app_name }}
 
-env:
-  DOTNET_VERSION: '6.0.x'
-  WEBAPP_ARCHIVED_APP_NAME: .net-app
-
 jobs:
   build:
     runs-on: windows-latest
     env:
+      DOTNET_VERSION: '6.0.x'
       WORKING_DIR: src/webapp
       AZURE_WEBAPP_PACKAGE_PATH: ${{ github.workspace }}/outputs
+      WEBAPP_ARCHIVED_APP_NAME: .net-app
     outputs:
       webapp_archived_app_name: ${{ env.WEBAPP_ARCHIVED_APP_NAME }}
     steps:
@@ -46,7 +44,7 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: ${{ env.AZURE_WEBAPP_ARCHIVED_APP_NAME }}
+        name: ${{ env.WEBAPP_ARCHIVED_APP_NAME }}
         path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
   # test:
