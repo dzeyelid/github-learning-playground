@@ -37,8 +37,8 @@ jobs:
             const result = is_production ? 'webapp_production' : 'webapp_staging'
             console.log(result)
             return result
-          env:
-            IS_PRODUCTION: ${{ inputs.is_production }}
+        env:
+          IS_PRODUCTION: ${{ inputs.is_production }}
 
   deploy-to-staging:
     name: Deploy to staging
