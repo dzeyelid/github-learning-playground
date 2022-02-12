@@ -15,9 +15,9 @@ on:
         description: Azure Web app name
         default: ''
         type: string
-      # is_production:
-      #   description: Enable to deploy to production
-      #   type: boolean
+      is_production:
+        description: Enable to deploy to production
+        type: boolean
     secrets:
       AZURE_CREDENTIALS:
         required: true
