@@ -1,20 +1,12 @@
 name: Azure Web App Deploy
 
 on:
-  push:
-    branches:
-    - main
-    paths:
-    - src/webapp/**
-  pull_request:
-    paths:
-    - src/webapp/**
-    types:
-    - opened
-    - synchronize
-    - reopened
-  workflow_dispatch:
+  workflow_call:
     inputs:
+      webapp_archived_app_name:
+        description: The archived app name for Web app
+        rquired: true
+        type: string
       azure_resource_group:
         description: Azure Resource Group name
         default: ''
@@ -27,66 +19,19 @@ on:
         description: Enable to deploy to production
         type: boolean
 
-env:
-  DOTNET_VERSION: '6.0.x'
-  AZURE_WEBAPP_ARCHIVED_APP_NAME: .net-app
-
 jobs:
-  build:
-    runs-on: windows-latest
-    env:
-      WORKING_DIR: src/webapp
-      AZURE_WEBAPP_PACKAGE_PATH: ${{ github.workspace }}/outputs
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Setup .NET Core SDK ${{ env.DOTNET_VERSION }}
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-
-    - name: Restore packages from cache
-      uses: actions/cache@v2
-      with:
-        path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-nuget-
-
-    # Run dotnet build and publish
-    - name: dotnet build and publish
-      run: |
-        dotnet restore
-        dotnet build --configuration Release
-        dotnet publish -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
-      working-directory: ${{ env.WORKING_DIR }}
-
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: ${{ env.AZURE_WEBAPP_ARCHIVED_APP_NAME }}
-        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
-
-  # test:
-  #   needs:
-  #     - build
-  #   runs-on: windows-latest
-
   deploy-to-staging:
     name: Deploy to staging
-    needs:
-      - build
-      # - test
     runs-on: windows-latest
     env:
-      AZURE_RESOURCE_GROUP: ${{ github.event.inputs.azure_resource_group || secrets.AZURE_RESOURCE_GROUP }}
-      AZURE_WEBAPP_NAME: ${{ github.event.inputs.azure_webapp_name || secrets.AZURE_WEBAPP_NAME }}
+      AZURE_RESOURCE_GROUP: ${{ inputs.azure_resource_group || secrets.AZURE_RESOURCE_GROUP }}
+      AZURE_WEBAPP_NAME: ${{ inputs.azure_webapp_name || secrets.AZURE_WEBAPP_NAME }}
       SLOT_NAME: staging
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v2
         with:
-          name: ${{ env.AZURE_WEBAPP_ARCHIVED_APP_NAME }}
+          name: ${{ inputs.webapp_archived_app_name }}
 
       # Login
       - name: 'Login via Azure CLI'
@@ -110,7 +55,7 @@ jobs:
     needs:
       - deploy-to-staging
     runs-on: windows-latest
-    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event.inputs.is_production }}
+    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || inputs.is_production }}
     steps:
       # Login
       - name: 'Login via Azure CLI'
