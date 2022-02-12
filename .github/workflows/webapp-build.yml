@@ -1,0 +1,55 @@
+name: Build Azure Web App
+
+on:
+  workflow_call:
+    outputs:
+      webapp_archived_app_name:
+        description: A archived app name for Azure Web app
+        value: ${{ jobs.build.outputs.webapp_archived_app_name }}
+
+env:
+  DOTNET_VERSION: '6.0.x'
+  WEBAPP_ARCHIVED_APP_NAME: .net-app
+
+jobs:
+  build:
+    runs-on: windows-latest
+    env:
+      WORKING_DIR: src/webapp
+      AZURE_WEBAPP_PACKAGE_PATH: ${{ github.workspace }}/outputs
+    outputs:
+      webapp_archived_app_name: ${{ env.WEBAPP_ARCHIVED_APP_NAME }}
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET Core SDK ${{ env.DOTNET_VERSION }}
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore packages from cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+
+    # Run dotnet build and publish
+    - name: dotnet build and publish
+      run: |
+        dotnet restore
+        dotnet build --configuration Release
+        dotnet publish -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
+      working-directory: ${{ env.WORKING_DIR }}
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ env.AZURE_WEBAPP_ARCHIVED_APP_NAME }}
+        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+
+  # test:
+  #   needs:
+  #     - build
+  #   runs-on: windows-latest

@@ -1,0 +1,47 @@
+name: Azure Web App Deploy
+
+on:
+  push:
+    branches:
+    - main
+    paths:
+    - src/webapp/**
+  pull_request:
+    paths:
+    - src/webapp/**
+    types:
+    - opened
+    - synchronize
+    - reopened
+  workflow_dispatch:
+    inputs:
+      azure_resource_group_name:
+        description: Azure Resource Group name
+        default: ''
+        type: string
+      azure_webapp_name:
+        description: Azure Web app name
+        default: ''
+        type: string
+      is_production:
+        description: Enable to deploy to production
+        type: boolean
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: ./.github/workflows/webapp-build.yml
+
+  deploy:
+    needs:
+      - build
+      # - test
+    runs-on: windows-latest
+    steps:
+      - uses: ./.github/workflows/webapp-deploy.yml
+        with:
+          azure_webapp_archived_app_name: ${{ needs.build.outputs.webapp_archived_app_name }}
+          azure_resource_group_name: ${{ github.event.inputs.azure_resource_group || secrets.AZURE_RESOURCE_GROUP_NAME }}
+          azure_webapp_name: ${{ github.event.inputs.azure_webapp_name || secrets.AZURE_WEBAPP_NAME }}
+          is_production: ${{ github.event.inputs.is_production }}
