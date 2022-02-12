@@ -20,35 +20,34 @@ on:
         required: true
 
 jobs:
-  select_environment:
-    name: Select environment
+  pre_process:
+    name: Check environment
     runs-on: windows-latest
     outputs:
-      environment: ${{ steps.select_enviroment.outputs.result }}
+      is_production: ${{ env.IS_PRODUCTION }}
+      staging_environment: ${{ steps.select_staging_enviroment.outputs.result }}
+    env:
+      IS_PRODUCTION: ${{ inputs.is_production == 'true' }}
     steps:
-      - name: Select environment
-        id: select_enviroment
+      - name: Select staging environment
+        id: select_staging_enviroment
         uses: actions/github-script@v6.0.0
         with:
           result-encoding: string
           script: |
-            console.log(process.env)
             const { IS_PRODUCTION } = process.env
-            const result = IS_PRODUCTION ? 'webapp_production' : 'webapp_staging'
-            console.log(result)
+            const result = IS_PRODUCTION ? 'webapp_pre_production' : 'webapp_staging'
             return result
-        env:
-          IS_PRODUCTION: ${{ inputs.is_production == 'true' }}
 
-  deploy-to-staging:
+  deploy_to_staging:
     name: Deploy to staging
     needs:
-      - select_environment
+      - pre_process
     env:
       AZURE_WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
       AZURE_WEBAPP_SLOT_NAME: ${{ secrets.AZURE_WEBAPP_SLOT_NAME }}
     environment:
-      name: ${{ needs.select_environment.outputs.environment }}
+      name: ${{ needs.pre_process.outputs.staging_environment }}
       url: https://${{ env.AZURE_WEBAPP_NAME }}-${{ env.AZURE_WEBAPP_SLOT_NAME }}.azurewebsites.net/
     runs-on: windows-latest
     steps:
@@ -71,18 +70,18 @@ jobs:
           package: .  # Indicate the directory includes downloaded artifacts
           slot-name: ${{ secrets.AZURE_WEBAPP_SLOT_NAME }}
 
-  deploy-to-production:
+  deploy_to_production:
     name: Deploy to Azure Web app
     needs:
-      - select_environment
-      - deploy-to-staging
+      - pre_process
+      - deploy_to_staging
     env:
       AZURE_WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
     environment:
-      name: ${{ needs.select_environment.outputs.environment }}
+      name: 'webapp_production'
       url: https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/
     runs-on: windows-latest
-    if: ${{ inputs.is_production }}
+    if: ${{ needs.pre_process.outputs.is_production }}
     steps:
       # Login
       - name: 'Login via Azure CLI'

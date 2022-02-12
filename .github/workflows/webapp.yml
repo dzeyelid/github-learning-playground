@@ -33,7 +33,7 @@ jobs:
     with:
       dotnet_version: '6.0.x'
 
-  deploy-to-staging:
+  deploy_to_staging:
     needs:
       - build
     if: ${{ github.event_name != 'push' && github.event.inputs.environment != 'production' }}
@@ -45,7 +45,7 @@ jobs:
       AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
       AZURE_WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
 
-  deploy-to-production:
+  deploy_to_production:
     needs:
       - build
       - test
