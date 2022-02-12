@@ -23,29 +23,36 @@ on:
         description: Azure Web app name
         default: ''
         type: string
+      is_production:
+        description: Enable to deploy to production
+        default: false
+        type: boolean
 
 env:
   DOTNET_VERSION: '6.0.x'
-  RESOURCE_GROUP: ${{ github.event.inputs.azure_resource_group || secrets.AZURE_RESOURCE_GROUP }}
-  AZURE_WEBAPP_NAME: ${{ github.event.inputs.azure_webapp_name || secrets.AZURE_WEBAPP_NAME }}
+  AZURE_WEBAPP_ARCHIVED_APP_NAME: .net-app
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: windows-latest
     env:
       WORKING_DIR: src/webapp
       AZURE_WEBAPP_PACKAGE_PATH: ${{ github.workspace }}/outputs
     steps:
-    - run: echo $CONTEXT | jq
-      env:
-        CONTEXT: ${{ toJSON(github) }}
-      shell: bash
-
     - uses: actions/checkout@v2
+
     - name: Setup .NET Core SDK ${{ env.DOTNET_VERSION }}
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore packages from cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
 
     # Run dotnet build and publish
     - name: dotnet build and publish
@@ -55,21 +62,47 @@ jobs:
         dotnet publish -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
       working-directory: ${{ env.WORKING_DIR }}
 
-    # Login
-    - name: 'Login via Azure CLI'
-      uses: azure/login@v1
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-        
-    # Deploy to Azure Web apps staging slot
-    - name: 'Deploy to staging'
-      uses: azure/webapps-deploy@v2
-      with: 
-        app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
-        package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
-        slot-name: staging
+        name: ${{ env.AZURE_WEBAPP_ARCHIVED_APP_NAME }}
+        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
-    # Swap
-    - name: 'Swap slot from staging'
-      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-      run: az webapp deployment slot swap --slot staging --name "${{ env.AZURE_WEBAPP_NAME }}" --resource-group "${{ env.RESOURCE_GROUP }}"
+  # test:
+  #   needs:
+  #     - build
+  #   runs-on: windows-latest
+
+  deploy:
+    needs:
+      - build
+      # - test
+    runs-on: windows-latest
+    env:
+      AZURE_RESOURCE_GROUP: ${{ github.event.inputs.azure_resource_group || secrets.AZURE_RESOURCE_GROUP }}
+      AZURE_WEBAPP_NAME: ${{ github.event.inputs.azure_webapp_name || secrets.AZURE_WEBAPP_NAME }}
+      SLOT_NAME: staging
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.AZURE_WEBAPP_ARCHIVED_APP_NAME }}
+
+      # Login
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # Deploy to Azure Web apps staging slot
+      - name: 'Deploy to staging'
+        uses: azure/webapps-deploy@v2
+        with: 
+          app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
+          package: .  # Indicate the directory includes downloaded artifacts
+          slot-name: ${{ env.SLOT_NAME }}
+
+      # Swap slot to production when the updates are merged to the main branch
+      - name: 'Swap slot from staging'
+        if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event.inputs.is_production }}
+        run: az webapp deployment slot swap --slot ${{ env.SLOT_NAME }} --name "${{ env.AZURE_WEBAPP_NAME }}" --resource-group "${{ env.AZURE_RESOURCE_GROUP }}"
