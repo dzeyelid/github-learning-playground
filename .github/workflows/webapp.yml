@@ -18,10 +18,6 @@ on:
       environment:
         description: Select environment
         type: environment
-      is_production:
-        description: Enable to deploy to production
-        default: false
-        type: boolean
 
 jobs:
   build:
@@ -37,7 +33,7 @@ jobs:
   deploy-to-staging:
     needs:
       - build
-    if: ${{ github.event_name != 'push' || !contains(inputs.environment, 'production') }}
+    if: ${{ github.event_name != 'push' || !contains(github.event.inputs.environment, 'production') }}
     uses: ./.github/workflows/webapp-deploy.yml
     with:
       webapp_archived_app_name: ${{ needs.build.outputs.webapp_archived_app_name }}
@@ -51,12 +47,11 @@ jobs:
     needs:
       - build
       - test
-    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || contains(inputs.environment, 'production') }}
+    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || contains(github.event.inputs.environment, 'production') }}
     uses: ./.github/workflows/webapp-deploy.yml
     with:
       webapp_archived_app_name: ${{ needs.build.outputs.webapp_archived_app_name }}
       environment: ${{ github.event.inputs.environment || 'webapp_production' }}
-      # is_production: ${{ github.event.inputs.is_production == 'true' }}  # Avoid this issue: https://github.com/github/feedback/discussions/9343
     secrets:
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
       AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
