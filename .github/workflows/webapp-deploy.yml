@@ -5,7 +5,7 @@ on:
     inputs:
       webapp_archived_app_name:
         description: The archived app name for Web app
-        rquired: true
+        required: true
         type: string
       azure_resource_group:
         description: Azure Resource Group name
@@ -58,7 +58,7 @@ jobs:
     name: Deploy to production
     environment:
       name: webapp_production
-      url: https://${{ secrets.AZURE_WEBAPP_NAME }}.azurewebsites.net/
+      url: https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/
     needs:
       - deploy-to-staging
     runs-on: windows-latest
