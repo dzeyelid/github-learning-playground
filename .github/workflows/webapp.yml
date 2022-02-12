@@ -28,6 +28,16 @@ on:
         type: boolean
 
 jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - run: echo ${CONTEXT} | jq
+        env:
+          CONTEXT: ${{ toJSON(github) }}
+      - run: echo ${INPUTS} | jq
+        env:
+          INPUTS: ${{ toJSON(inputs) }}
+
   build:
     uses: ./.github/workflows/webapp-build.yml
 
