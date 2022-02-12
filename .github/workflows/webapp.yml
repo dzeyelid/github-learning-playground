@@ -1,4 +1,4 @@
-name: Azure Web App Build and deploy
+name: 'Webapp deployment experiment: Build and deploy'
 
 on:
   push:

@@ -1,4 +1,4 @@
-name: Deploy to Azure Web App
+name: 'Webapp deployment experiment: Deploy'
 
 on:
   workflow_call:
