@@ -34,11 +34,11 @@ jobs:
           script: |
             console.log(process.env)
             const { IS_PRODUCTION } = process.env
-            const result = is_production ? 'webapp_production' : 'webapp_staging'
+            const result = IS_PRODUCTION ? 'webapp_production' : 'webapp_staging'
             console.log(result)
             return result
         env:
-          IS_PRODUCTION: ${{ inputs.is_production }}
+          IS_PRODUCTION: ${{ inputs.is_production == 'true' }}
 
   deploy-to-staging:
     name: Deploy to staging
