@@ -7,16 +7,9 @@ on:
         description: The archived app name for Web app
         required: true
         type: string
-      azure_resource_group_name:
-        description: Azure Resource Group name
-        default: ''
-        type: string
-      azure_webapp_name:
-        description: Azure Web app name
-        default: ''
-        type: string
       is_production:
         description: Enable to deploy to production
+        default: false
         type: boolean
     secrets:
       AZURE_CREDENTIALS:
@@ -29,10 +22,12 @@ on:
 env:
   AZURE_RESOURCE_GROUP_NAME: ${{ inputs.azure_resource_group_name || secrets.AZURE_RESOURCE_GROUP_NAME }}
   AZURE_WEBAPP_NAME: ${{ inputs.azure_webapp_name || secrets.AZURE_WEBAPP_NAME }}
-  SLOT_NAME: staging
+  SLOT_NAME: ${{ secrets.AZURE_WEBAPP_SLOT_NAME }}
 
 jobs:
   deploy-to-staging:
+    needs:
+      - build
     name: Deploy to staging
     runs-on: windows-latest
     steps:

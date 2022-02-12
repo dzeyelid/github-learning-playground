@@ -15,32 +15,40 @@ on:
     - reopened
   workflow_dispatch:
     inputs:
-      azure_resource_group_name:
-        description: Azure Resource Group name
-        default: ''
-        type: string
-      azure_webapp_name:
-        description: Azure Web app name
-        default: ''
-        type: string
       is_production:
         description: Enable to deploy to production
+        default: false
         type: boolean
 
 jobs:
   build:
     uses: ./.github/workflows/webapp-build.yml
 
-  deploy:
+  # test:
+  #   uses: ./.github/workflows/webapp-test.yml
+
+  deploy-to-staging:
     needs:
       - build
     uses: ./.github/workflows/webapp-deploy.yml
     with:
       webapp_archived_app_name: ${{ needs.build.outputs.webapp_archived_app_name }}
-      azure_resource_group_name: ${{ github.event.inputs.azure_resource_group_name }}
-      azure_webapp_name: ${{ github.event.inputs.azure_webapp_name }}
       is_production: ${{ github.event.inputs.is_production == 'true' }}  # Avoid this issue: https://github.com/github/feedback/discussions/9343
     secrets:
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
       AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
       AZURE_WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
+
+  # deploy-to-production:
+  #   needs:
+  #     - build
+  #     - test
+  #   if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || inputs.is_production }}
+  #   uses: ./.github/workflows/webapp-deploy.yml
+  #   with:
+  #     webapp_archived_app_name: ${{ needs.build.outputs.webapp_archived_app_name }}
+  #     is_production: ${{ github.event.inputs.is_production == 'true' }}  # Avoid this issue: https://github.com/github/feedback/discussions/9343
+  #   secrets:
+  #     AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+  #     AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+  #     AZURE_WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
