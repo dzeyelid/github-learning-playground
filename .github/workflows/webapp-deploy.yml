@@ -25,7 +25,6 @@ on:
         type: string
       is_production:
         description: Enable to deploy to production
-        default: false
         type: boolean
 
 env:
@@ -106,7 +105,8 @@ jobs:
   deploy-to-production:
     name: Deploy to production
     environment:
-      - webapp_production
+      name: webapp_production
+      url: https://${{ secrets.AZURE_WEBAPP_NAME }}.azurewebsites.net/
     needs:
       - deploy-to-staging
     runs-on: windows-latest
@@ -120,5 +120,4 @@ jobs:
 
       # Swap slot to production when the updates are merged to the main branch
       - name: 'Swap slot from staging'
-        environment:
         run: az webapp deployment slot swap --slot ${{ env.SLOT_NAME }} --name "${{ env.AZURE_WEBAPP_NAME }}" --resource-group "${{ env.AZURE_RESOURCE_GROUP }}"
