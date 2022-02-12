@@ -27,58 +27,49 @@ on:
         required: true
 
 jobs:
-  test:
+  deploy-to-staging:
+    name: Deploy to staging
     runs-on: windows-latest
+    env:
+      AZURE_RESOURCE_GROUP_NAME: ${{ inputs.azure_resource_group_name || secrets.AZURE_RESOURCE_GROUP_NAME }}
+      AZURE_WEBAPP_NAME: ${{ inputs.azure_webapp_name || secrets.AZURE_WEBAPP_NAME }}
+      SLOT_NAME: staging
     steps:
-      - run: echo ${CONTEXT} | jq
-        env:
-          CONTEXT: ${{ toJSON(github) }}
-      - run: echo ${INPUTS} | jq
-        env:
-          INPUTS: ${{ toJSON(inputs) }}
-  # deploy-to-staging:
-  #   name: Deploy to staging
-  #   runs-on: windows-latest
-  #   env:
-  #     AZURE_RESOURCE_GROUP_NAME: ${{ inputs.azure_resource_group_name || secrets.AZURE_RESOURCE_GROUP_NAME }}
-  #     AZURE_WEBAPP_NAME: ${{ inputs.azure_webapp_name || secrets.AZURE_WEBAPP_NAME }}
-  #     SLOT_NAME: staging
-  #   steps:
-  #     - name: Download artifacts
-  #       uses: actions/download-artifact@v2
-  #       with:
-  #         name: ${{ inputs.webapp_archived_app_name }}
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ inputs.webapp_archived_app_name }}
 
-  #     # Login
-  #     - name: 'Login via Azure CLI'
-  #       uses: azure/login@v1
-  #       with:
-  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
+      # Login
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-  #     # Deploy to Azure Web apps staging slot
-  #     - name: 'Deploy to staging'
-  #       uses: azure/webapps-deploy@v2
-  #       with: 
-  #         app-name: ${{ env.AZURE_WEBAPP_NAME }}
-  #         package: .  # Indicate the directory includes downloaded artifacts
-  #         slot-name: ${{ env.SLOT_NAME }}
+      # Deploy to Azure Web apps staging slot
+      - name: 'Deploy to staging'
+        uses: azure/webapps-deploy@v2
+        with: 
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          package: .  # Indicate the directory includes downloaded artifacts
+          slot-name: ${{ env.SLOT_NAME }}
 
-  # deploy-to-production:
-  #   name: Deploy to production
-  #   environment:
-  #     name: webapp_production
-  #     url: https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/
-  #   needs:
-  #     - deploy-to-staging
-  #   runs-on: windows-latest
-  #   if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || inputs.is_production }}
-  #   steps:
-  #     # Login
-  #     - name: 'Login via Azure CLI'
-  #       uses: azure/login@v1
-  #       with:
-  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
+  deploy-to-production:
+    name: Deploy to production
+    environment:
+      name: webapp_production
+      url: https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/
+    needs:
+      - deploy-to-staging
+    runs-on: windows-latest
+    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || inputs.is_production }}
+    steps:
+      # Login
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-  #     # Swap slot to production when the updates are merged to the main branch
-  #     - name: 'Swap slot from staging'
-  #       run: az webapp deployment slot swap --slot ${{ env.SLOT_NAME }} --name "${{ env.AZURE_WEBAPP_NAME }}" --resource-group "${{ env.AZURE_RESOURCE_GROUP_NAME }}"
+      # Swap slot to production when the updates are merged to the main branch
+      - name: 'Swap slot from staging'
+        run: az webapp deployment slot swap --slot ${{ env.SLOT_NAME }} --name "${{ env.AZURE_WEBAPP_NAME }}" --resource-group "${{ env.AZURE_RESOURCE_GROUP_NAME }}"
