@@ -18,13 +18,13 @@ on:
       is_production:
         description: Enable to deploy to production
         type: boolean
-    secrets:
-      AZURE_CREDENTIALS:
-        required: true
-      AZURE_RESOURCE_GROUP_NAME:
-        required: true
-      AZURE_WEBAPP_NAME:
-        required: true
+    # secrets:
+    #   AZURE_CREDENTIALS:
+    #     required: true
+    #   AZURE_RESOURCE_GROUP_NAME:
+    #     required: true
+    #   AZURE_WEBAPP_NAME:
+    #     required: true
 
 jobs:
   test:
