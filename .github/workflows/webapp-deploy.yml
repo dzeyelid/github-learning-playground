@@ -7,7 +7,7 @@ on:
         description: The archived app name for Web app
         required: true
         type: string
-      azure_resource_group:
+      azure_resource_group_name:
         description: Azure Resource Group name
         default: ''
         type: string
@@ -31,7 +31,7 @@ jobs:
     name: Deploy to staging
     runs-on: windows-latest
     env:
-      AZURE_RESOURCE_GROUP: ${{ inputs.azure_resource_group || secrets.AZURE_RESOURCE_GROUP_NAME }}
+      AZURE_RESOURCE_GROUP_NAME: ${{ inputs.azure_resource_group_name || secrets.AZURE_RESOURCE_GROUP_NAME }}
       AZURE_WEBAPP_NAME: ${{ inputs.azure_webapp_name || secrets.AZURE_WEBAPP_NAME }}
       SLOT_NAME: staging
     steps:
@@ -72,4 +72,4 @@ jobs:
 
       # Swap slot to production when the updates are merged to the main branch
       - name: 'Swap slot from staging'
-        run: az webapp deployment slot swap --slot ${{ env.SLOT_NAME }} --name "${{ env.AZURE_WEBAPP_NAME }}" --resource-group "${{ env.AZURE_RESOURCE_GROUP }}"
+        run: az webapp deployment slot swap --slot ${{ env.SLOT_NAME }} --name "${{ env.AZURE_WEBAPP_NAME }}" --resource-group "${{ env.AZURE_RESOURCE_GROUP_NAME }}"
