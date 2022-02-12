@@ -28,11 +28,13 @@ env:
 
 jobs:
   build:
+    name: Build app
     uses: ./.github/workflows/webapp-build.yml
     with:
       dotnet_version: '6.0.x'
 
   test:
+    name: Test app
     needs:
       - build
     uses: ./.github/workflows/webapp-test.yml
@@ -40,6 +42,7 @@ jobs:
       dotnet_version: '6.0.x'
 
   select_staging:
+    name: Select staging
     needs:
       - build
     env:
@@ -59,6 +62,7 @@ jobs:
             return result
 
   deploy_to_staging:
+    name: Deploy to staging
     needs:
       - build
       - select_staging
@@ -84,11 +88,12 @@ jobs:
         id: deploy_to_staging
         uses: azure/webapps-deploy@v2
         with: 
-          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
           package: .  # Indicate the directory includes downloaded artifacts
           slot-name: ${{ needs.select_staging.outputs.staging_environment }}
 
   deploy_to_production:
+    name: Deploy to production
     needs:
       - build
       - test
