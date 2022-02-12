@@ -42,9 +42,12 @@ jobs:
     name: Deploy to staging
     needs:
       - select_environment
+    env:
+      AZURE_WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
+      AZURE_WEBAPP_SLOT_NAME: ${{ secrets.AZURE_WEBAPP_SLOT_NAME }}
     environment:
       name: ${{ needs.select_environment.outputs.environment }}
-      url: https://${{ secrets.AZURE_WEBAPP_NAME }}-${{ secrets.AZURE_WEBAPP_SLOT_NAME }}.azurewebsites.net/
+      url: https://${{ env.AZURE_WEBAPP_NAME }}-${{ env.AZURE_WEBAPP_SLOT_NAME }}.azurewebsites.net/
     runs-on: windows-latest
     steps:
       - name: Download artifacts
@@ -71,9 +74,11 @@ jobs:
     needs:
       - select_environment
       - deploy-to-staging
+    env:
+      AZURE_WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
     environment:
       name: ${{ needs.select_environment.outputs.environment }}
-      url: https://${{ secrets.AZURE_WEBAPP_NAME }}.azurewebsites.net/
+      url: https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/
     runs-on: windows-latest
     if: ${{ inputs.is_production }}
     steps:
