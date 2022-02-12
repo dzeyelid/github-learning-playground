@@ -26,14 +26,15 @@ on:
       AZURE_WEBAPP_NAME:
         required: true
 
+env:
+  AZURE_RESOURCE_GROUP_NAME: ${{ inputs.azure_resource_group_name || secrets.AZURE_RESOURCE_GROUP_NAME }}
+  AZURE_WEBAPP_NAME: ${{ inputs.azure_webapp_name || secrets.AZURE_WEBAPP_NAME }}
+  SLOT_NAME: staging
+
 jobs:
   deploy-to-staging:
     name: Deploy to staging
     runs-on: windows-latest
-    env:
-      AZURE_RESOURCE_GROUP_NAME: ${{ inputs.azure_resource_group_name || secrets.AZURE_RESOURCE_GROUP_NAME }}
-      AZURE_WEBAPP_NAME: ${{ inputs.azure_webapp_name || secrets.AZURE_WEBAPP_NAME }}
-      SLOT_NAME: staging
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v2
