@@ -18,13 +18,20 @@ on:
       is_production:
         description: Enable to deploy to production
         type: boolean
+    secrets:
+      AZURE_CREDENTIALS:
+        required: true
+      AZURE_RESOURCE_GROUP_NAME:
+        required: true
+      AZURE_WEBAPP_NAME:
+        required: true
 
 jobs:
   deploy-to-staging:
     name: Deploy to staging
     runs-on: windows-latest
     env:
-      AZURE_RESOURCE_GROUP: ${{ inputs.azure_resource_group || secrets.AZURE_RESOURCE_GROUP }}
+      AZURE_RESOURCE_GROUP: ${{ inputs.azure_resource_group || secrets.AZURE_RESOURCE_GROUP_NAME }}
       AZURE_WEBAPP_NAME: ${{ inputs.azure_webapp_name || secrets.AZURE_WEBAPP_NAME }}
       SLOT_NAME: staging
     steps:
