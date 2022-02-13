@@ -67,7 +67,7 @@ jobs:
       - build
       - select_staging
     environment:
-      name: default
+      name: webapp_staging
       url: ${{ steps.deploy_to_staging.outputs.webapp-url }}
     runs-on: windows-latest
     steps:
