@@ -7,16 +7,9 @@ on:
         description: The archived app name for Web app
         required: true
         type: string
-      azure_resource_group_name:
-        description: Azure Resource Group name
-        default: ''
-        type: string
-      azure_webapp_name:
-        description: Azure Web app name
-        default: ''
-        type: string
       is_production:
-        description: Enable to deploy to production
+        description: For production or not
+        default: false
         type: boolean
     secrets:
       AZURE_CREDENTIALS:
@@ -25,15 +18,35 @@ on:
         required: true
       AZURE_WEBAPP_NAME:
         required: true
-
-env:
-  AZURE_RESOURCE_GROUP_NAME: ${{ inputs.azure_resource_group_name || secrets.AZURE_RESOURCE_GROUP_NAME }}
-  AZURE_WEBAPP_NAME: ${{ inputs.azure_webapp_name || secrets.AZURE_WEBAPP_NAME }}
-  SLOT_NAME: staging
+      AZURE_WEBAPP_SLOT_NAME:
 
 jobs:
-  deploy-to-staging:
+  pre_process:
+    name: Check environment
+    runs-on: windows-latest
+    env:
+      IS_PRODUCTION: ${{ inputs.is_production == 'true' }}
+    outputs:
+      is_production: ${{ env.IS_PRODUCTION }}
+      staging_environment: ${{ steps.select_staging_enviroment.outputs.result }}
+    steps:
+      - name: Select staging environment
+        id: select_staging_enviroment
+        uses: actions/github-script@v6.0.0
+        with:
+          result-encoding: string
+          script: |
+            const { IS_PRODUCTION } = process.env
+            const result = IS_PRODUCTION ? 'webapp_pre_production' : 'webapp_staging'
+            return result
+
+  deploy_to_staging:
     name: Deploy to staging
+    needs:
+      - pre_process
+    environment:
+      name: ${{ needs.pre_process.outputs.staging_environment }}
+      url: ${{ steps.deploy_to_staging.outputs.webapp-url }}
     runs-on: windows-latest
     steps:
       - name: Download artifacts
@@ -49,21 +62,23 @@ jobs:
 
       # Deploy to Azure Web apps staging slot
       - name: 'Deploy to staging'
+        id: deploy_to_staging
         uses: azure/webapps-deploy@v2
         with: 
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
           package: .  # Indicate the directory includes downloaded artifacts
-          slot-name: ${{ env.SLOT_NAME }}
+          slot-name: ${{ secrets.AZURE_WEBAPP_SLOT_NAME }}
 
-  deploy-to-production:
-    name: Deploy to production
-    environment:
-      name: webapp_production
-      url: https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/
+  deploy_to_production:
+    name: Deploy to Azure Web app
     needs:
-      - deploy-to-staging
+      - pre_process
+      - deploy_to_staging
+    environment:
+      name: 'webapp_production'
+      url: https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/
     runs-on: windows-latest
-    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || inputs.is_production }}
+    if: ${{ needs.pre_process.outputs.is_production }}
     steps:
       # Login
       - name: 'Login via Azure CLI'
@@ -73,4 +88,4 @@ jobs:
 
       # Swap slot to production when the updates are merged to the main branch
       - name: 'Swap slot from staging'
-        run: az webapp deployment slot swap --slot ${{ env.SLOT_NAME }} --name "${{ env.AZURE_WEBAPP_NAME }}" --resource-group "${{ env.AZURE_RESOURCE_GROUP_NAME }}"
+        run: az webapp deployment slot swap --slot "${{ secrets.AZURE_WEBAPP_SLOT_NAME }}" --name "${{ secrets.AZURE_WEBAPP_NAME }}" --resource-group "${{ secrets.AZURE_RESOURCE_GROUP_NAME }}"

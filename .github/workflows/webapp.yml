@@ -15,32 +15,102 @@ on:
     - reopened
   workflow_dispatch:
     inputs:
-      azure_resource_group_name:
-        description: Azure Resource Group name
-        default: ''
-        type: string
-      azure_webapp_name:
-        description: Azure Web app name
-        default: ''
-        type: string
-      is_production:
-        description: Enable to deploy to production
-        type: boolean
+      environment:
+        description: Select environment
+        type: choice
+        options:
+          - staging
+          - production  
+
+env:
+  AZURE_WEBAPP_NAME: app-playground20220211-webapp
+  AZURE_RESOURCE_GROUP_NAME: rg-playground20220211-webapp
 
 jobs:
   build:
+    name: Build app
     uses: ./.github/workflows/webapp-build.yml
+    with:
+      dotnet_version: '6.0.x'
 
-  deploy:
+  test:
+    name: Test app
     needs:
       - build
-    uses: ./.github/workflows/webapp-deploy.yml
+    uses: ./.github/workflows/webapp-test.yml
     with:
-      webapp_archived_app_name: ${{ needs.build.outputs.webapp_archived_app_name }}
-      azure_resource_group_name: ${{ github.event.inputs.azure_resource_group_name }}
-      azure_webapp_name: ${{ github.event.inputs.azure_webapp_name }}
-      is_production: ${{ github.event.inputs.is_production == 'true' }}  # Avoid this issue: https://github.com/github/feedback/discussions/9343
-    secrets:
-      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
-      AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-      AZURE_WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
+      dotnet_version: '6.0.x'
+
+  select_staging:
+    name: Select staging
+    needs:
+      - build
+    env:
+      IS_PRODUCTION: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event.inputs.environment == 'production' }}
+    outputs:
+      staging_environment: ${{ steps.select_staging_enviroment.outputs.result }}
+    runs-on: windows-latest
+    steps:
+      - name: Select staging environment
+        id: select_staging_enviroment
+        uses: actions/github-script@v6
+        with:
+          result-encoding: string
+          script: |
+            const { IS_PRODUCTION } = process.env
+            const result = IS_PRODUCTION ? 'pre-production' : 'staging'
+            return result
+
+  deploy_to_staging:
+    name: Deploy to staging
+    needs:
+      - build
+      - select_staging
+    environment:
+      name: default
+      url: ${{ steps.deploy_to_staging.outputs.webapp-url }}
+    runs-on: windows-latest
+    steps:
+      # Download the archived app
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ needs.build.outputs.webapp_archived_app_name }}
+
+      # Login to Azure
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # Deploy to Azure Web apps staging slot
+      - name: 'Deploy to staging'
+        id: deploy_to_staging
+        uses: azure/webapps-deploy@v2
+        with: 
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          package: .  # Indicate the directory includes downloaded artifacts
+          slot-name: ${{ needs.select_staging.outputs.staging_environment }}
+
+  deploy_to_production:
+    name: Deploy to production
+    needs:
+      - build
+      - test
+      - select_staging
+      - deploy_to_staging
+    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event.inputs.environment == 'production' }}
+    environment:
+      name: 'webapp_production'
+      url: https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/
+    runs-on: windows-latest
+    steps:
+      # Login to Azure
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # Swap slot to production when the updates are merged to the main branch
+      - name: 'Swap slot from staging'
+        run: az webapp deployment slot swap --slot "${{ needs.select_staging.outputs.staging_environment }}" --name "${{ env.AZURE_WEBAPP_NAME }}" --resource-group "${{ env.AZURE_RESOURCE_GROUP_NAME }}"
