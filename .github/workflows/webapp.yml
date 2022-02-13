@@ -46,7 +46,7 @@ jobs:
     needs:
       - build
     env:
-      IS_PRODUCTION: ${{ github.event.inputs.environment == 'production' }}
+      IS_PRODUCTION: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event.inputs.environment == 'production' }}
     outputs:
       staging_environment: ${{ steps.select_staging_enviroment.outputs.result }}
     runs-on: windows-latest
