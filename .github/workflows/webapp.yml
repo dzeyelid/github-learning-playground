@@ -58,7 +58,7 @@ jobs:
           result-encoding: string
           script: |
             const { IS_PRODUCTION } = process.env
-            const result = IS_PRODUCTION ? 'pre-production' : 'staging'
+            const result = IS_PRODUCTION == 'true' ? 'pre-production' : 'staging'
             return result
 
   deploy_to_staging:
