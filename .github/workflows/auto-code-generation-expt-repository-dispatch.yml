@@ -39,7 +39,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Get latest release
         id: get-latest-release
         uses: actions/github-script@v4.0.2
@@ -71,7 +71,7 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Create blank commit
         run: |
           git config user.name "Dispatch receiver"
