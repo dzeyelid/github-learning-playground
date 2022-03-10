@@ -2,7 +2,7 @@ name: 'DevOps workshop: schedule cron trigger'
 
 on:
   schedule:
-    - cron: '2 */4 21,22 2 *'
+    - cron: '2 */4 10,11 3 *'
 
 jobs:
   scheduled:
