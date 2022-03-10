@@ -9,7 +9,7 @@ on:
         default: world
 
 jobs:
-  scheduled:
+  job1:
     runs-on: ubuntu-latest
 
     steps:
