@@ -43,8 +43,6 @@
 		"GitHub.copilot",
 		"GitHub.vscode-pull-request-github",
     "humao.rest-client",
-    "hashicorp.terraform",
-    "ms-azuretools.vscode-azureterraform",
 	],
 	
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
@@ -53,7 +51,6 @@
 	// "oryx build" will automatically install your dependencies and attempt to build your project
 	"postCreateCommand": "oryx build -p virtualenv_name=.venv --log-file /tmp/oryx-build.log --manifest-dir /tmp || echo 'Could not auto-build. Skipping.'",
 	"features": {
-		"git": "latest",
-		"terraform": "0.15"
+		"git": "latest"
 	}
 }
