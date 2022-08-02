@@ -5,12 +5,15 @@ on:
   workflow_run:
     workflows: [ "DevOps workshop: workflow_dispatch trigger" ]
     types: [ completed ]
+  workflow_dispatch:
 
 jobs:
   check-previous:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     steps:
       - run: echo 'Continue'
+
   run-something:
     needs: check-previous
     runs-on: ubuntu-latest
