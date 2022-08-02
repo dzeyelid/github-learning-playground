@@ -1,0 +1,18 @@
+name: "Test workflow_run trigger"
+
+# Controls when the workflow will run
+on:
+  workflow_run:
+    workflows: [ "DevOps workshop: workflow_dispatch trigger" ]
+    types: [ completed ]
+
+jobs:
+  check-previous:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'Continue'
+  run-something:
+    needs: check-previous
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'Done'
