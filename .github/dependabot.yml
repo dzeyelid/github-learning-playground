@@ -10,3 +10,9 @@ updates:
   directory: "/terraform"
   schedule:
     interval: "daily"
+
+- package-ecosystem: "npm"
+  directory: "/old-packages"
+  schedule:
+    interval: "daily"
+  versioning-strategy: increase-if-necessary
