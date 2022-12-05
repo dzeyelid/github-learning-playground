@@ -1,4 +1,4 @@
-name: This is name syntax
+name: 'Experiment: run-name'
 run-name: 'This is run-name syntax: inputs.message = ${{ inputs.message }}'
 
 on:
