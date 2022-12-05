@@ -13,6 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Print the input message
-        run: echo "The message is \"${{ MESSAGE }}
+        run: echo "The message is \"${{ MESSAGE }}\""
         env:
           MESSAGE: ${{ inputs.message }}
