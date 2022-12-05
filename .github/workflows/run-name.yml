@@ -1,5 +1,5 @@
 name: This is name syntax
-run-name: This is run-name syntax: inputs.message = ${{ inputs.message }}
+run-name: 'This is run-name syntax: inputs.message = ${{ inputs.message }}'
 
 on:
   workflow_dispatch:
