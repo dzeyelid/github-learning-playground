@@ -68,7 +68,7 @@ jobs:
     steps:
     - name: Split repository context
       id: split_context_repo
-      uses: actions/github-script@v4.0.2
+      uses: actions/github-script@v6.4.0
       with:
         script: |
           const split = context.payload.repository.full_name.split('/');
