@@ -3,13 +3,9 @@ name: Starter workflow for reusable workflow
 on:
   workflow_dispatch:
 
-env:
-  OWNER: dzeyelid
-  REPO: github-learning-playground
-
 jobs:
   call_reusable_workflow:
-    uses: ${{ env.OWNER }}/${{ env.REPO }}/.github/workflows/reusable-workflow.yml@main
+    uses: ./.github/workflows/reusable-workflow.yml
     with:
       friend_name: mona
     secrets:
