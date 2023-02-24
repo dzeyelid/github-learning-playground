@@ -4,5 +4,38 @@ on:
   workflow_dispatch:
 
 jobs:
+  prepare_acr:
+    name: Preparing for Azure Container Registry
+    runs-on: ubuntu-latest
+    environment: acr-simple
+    outputs:
+      username: ${{ steps.get_access_token.outputs.CONTAINER_REGISTRY_USER }}
+      token: ${{ steps.get_access_token.outputs.CONTAINER_REGISTRY_TOKEN }}
+      registry_server: ${{ vars.CONTAINER_REGISTRY_NAME }}.azurecr.io
+    steps:
+      - name: Login in to Azure
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscripton-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          
+      - name: Get an access token to Azure Container Registry
+        id: get_access_token
+        run: |
+          TOKEN=$(az acr login --name ${{ vars.CONTAINER_REGISTRY_NAME }} --expose-token --query accessToken --output tsv)
+          echo 'CONTAINER_REGISTRY_USER=00000000-0000-0000-0000-000000000000' >> $GITHUB_OUTPUT
+          echo "CONTAINER_REGISTRY_TOKEN=${TOKEN}" >> $GITHUB_OUTPUT          
+
   build_and_push:
+    needs:
+      - prepare_acr
     uses: ./.github/workflows/reusable-docker-build-and-push.yml
+    with:
+      image_name: ${{ github.repository }}/simple
+      context_path: containers/simple
+      push: true
+      registrey_server_url: ${{ jobs.prepare_acr.outputs.registry_server }}
+    secrets:
+      REGISTRY_USERNAME: ${{ jobs.prepare_acr.outputs.username }}
+      REGISTRY_PASSWORD: ${{ jobs.prepare_acr.outputs.token }}
