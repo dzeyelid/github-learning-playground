@@ -14,7 +14,7 @@ on:
       dockerfile_path:
         description: Path to Dockerfile
         type: string
-        default: /Dockerfile
+        default: ./Dockerfile
       push:
         description: Whether if push the built image or not
         type: boolean
