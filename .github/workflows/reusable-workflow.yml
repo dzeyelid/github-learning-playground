@@ -30,4 +30,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo 'Secret is ${{ secrets.THIS_IS_SECRET }}'
+          echo 'This secret value "${{ secrets.THIS_IS_SECRET }}" is treated as hidden, so replaced as '***' when showing.'
