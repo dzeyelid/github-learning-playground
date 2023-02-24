@@ -1,0 +1,8 @@
+name: Starter workflow to build and push Docker image
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_and_push:
+    uses: ./.github/workflows/reusable-docker-build-and-push.yml
