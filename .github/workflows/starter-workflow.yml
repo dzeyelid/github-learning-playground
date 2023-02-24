@@ -1,0 +1,20 @@
+name: Starter workflow for reusable workflow
+
+on:
+  workflow_dispatch:
+
+jobs:
+  call_reusable_workflow:
+    uses: .github/workflows/reusable-workflow.yml@main
+    with:
+      friend_name: mona
+    secrets:
+      THIS_IS_SECRET: ${{ secrets.THIS_IS_SECRET }}
+
+  show_outputs:
+    needs:
+      - call_reusable_workflow
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo ${{ needs.call_reusable_workflow.outputs.greeting_message }}
