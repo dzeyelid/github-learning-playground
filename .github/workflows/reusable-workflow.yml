@@ -24,7 +24,7 @@ jobs:
     steps:
       - id: message
         run: |
-          echo 'message=Hooray ${{ inputs.friend_name }}!' >> $GITHUB_OUTPUTS
+          echo 'message=Hooray ${{ inputs.friend_name }}!' >> $GITHUB_OUTPUT
 
   cant_show_secret:
     runs-on: ubuntu-latest
