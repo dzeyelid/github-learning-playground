@@ -1,0 +1,33 @@
+name: Reusable workflow sample
+
+on:
+  workflow_call:
+    inputs:
+      friend_name:
+        description: Fill in the friend name you want to greet
+        required: true
+        type: string
+    secrets:
+      THIS_IS_SECRET:
+        description: Fill some secret string
+        required: true
+    outputs:
+      greeting_message:
+        description: Greeting message
+        value: ${{ jobs.greeting.outputs.message }}
+
+jobs:
+  greeting:
+    runs-on: ubuntu-latest
+    outputs:
+      message: ${{ steps.message.outputs.message }}
+    steps:
+      - id: message
+        run: |
+          echo 'message=Hooray ${{ inputs.friend_name }}!' >> $GITHUB_OUTPUTS
+
+  cant_show_secret:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo 'Secret is ${{ secrets.THIS_IS_SECRET }}'
