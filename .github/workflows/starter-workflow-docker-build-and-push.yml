@@ -35,7 +35,7 @@ jobs:
       image_name: ${{ github.repository }}/simple
       context_path: containers/simple
       push: true
-      registrey_server_url: ${{ needs.prepare_acr.outputs.registry_server }}
+      registry_server_url: ${{ needs.prepare_acr.outputs.registry_server }}
     secrets:
       REGISTRY_USERNAME: ${{ needs.prepare_acr.outputs.username }}
       REGISTRY_PASSWORD: ${{ needs.prepare_acr.outputs.token }}
