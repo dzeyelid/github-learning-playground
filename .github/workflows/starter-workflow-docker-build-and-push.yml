@@ -10,7 +10,7 @@ jobs:
       image_name: ${{ github.repository }}/simple
       context_path: containers/simple
       push: true
-      registry_server_url: ${{ secrets.CONTAINER_REGISTRY_SERVER }}
+      registry_server_url: ${{ vars.CONTAINER_REGISTRY_SERVER }}
     secrets:
       REGISTRY_USERNAME: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
