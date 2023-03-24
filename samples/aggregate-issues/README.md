@@ -32,7 +32,7 @@ node main.js | jq > .output.json
 
 このサンプルは、下記のようにオブジェクトを配列で出力します。
 
-```json
+```jsonc
 [
   {
     // issue number
