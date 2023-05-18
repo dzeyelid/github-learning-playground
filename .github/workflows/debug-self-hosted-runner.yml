@@ -1,0 +1,10 @@
+name: Debug self-hosted runner
+
+on:
+  workflow_dispatch:
+
+jobs:
+  debug:
+    runs-on: debug
+    steps:
+      - run: echo "Hello world"
