@@ -6,7 +6,7 @@ on:
       - main
     types:
       - opened
-      - edited
+#       - edited
       - synchronize
       - reopened
       - closed
