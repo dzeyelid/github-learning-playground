@@ -15,6 +15,12 @@ jobs:
   show:
     runs-on: ubuntu-latest
     steps:
-      - run: echo $GITHUB_CONTEXT | jq
+      - if: github.event.action != 'closed'
+        run: |
+          echo 'Hello'
+          echo $GITHUB_CONTEXT | jq
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
+
+      - run: echo "CLOSED"
+        if: github.event.action == 'closed'
