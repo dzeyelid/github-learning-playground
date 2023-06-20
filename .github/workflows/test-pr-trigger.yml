@@ -15,4 +15,6 @@ jobs:
   show:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Hello"
+      - run: echo $GITHUB_CONTEXT | jq
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github.context) }}
