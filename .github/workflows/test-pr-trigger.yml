@@ -17,4 +17,4 @@ jobs:
     steps:
       - run: echo $GITHUB_CONTEXT | jq
         env:
-          GITHUB_CONTEXT: ${{ toJson(github.context) }}
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
