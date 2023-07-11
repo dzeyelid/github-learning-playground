@@ -4,6 +4,8 @@
 # - `title`: プルリクエストのタイトル
 # - `body`: プルリクエストの本文
 
+name: Craete PR by CLI
+
 on:
   workflow_dispatch:
     inputs:
@@ -13,6 +15,10 @@ on:
       body:
         description: 'プルリクエストの本文'
         required: true
+
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
   create-pr:
@@ -26,4 +32,8 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Create PR by CLI
         run: |
-          gh pr create --title "${{ github.event.inputs.title }}" --body "${{ github.event.inputs.body }}"
+          gh pr create \
+            --title "${{ github.event.inputs.title }}" \
+            --body "${{ github.event.inputs.body }}" \
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
