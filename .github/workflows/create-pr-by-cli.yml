@@ -1,0 +1,29 @@
+# GitHub CLIを用いて、GitHub上にプルリクエストを作成する
+# 対象のリポジトリは`dzeyelid/github-learning-playground`とする
+# トリガは`workflow_dispatch`で、下記の引数を得る
+# - `title`: プルリクエストのタイトル
+# - `body`: プルリクエストの本文
+
+on:
+  workflow_dispatch:
+    inputs:
+      title:
+        description: 'プルリクエストのタイトル'
+        required: true
+      body:
+        description: 'プルリクエストの本文'
+        required: true
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: dzeyelid/github-learning-playground
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create PR by CLI
+        run: |
+          gh pr create --title "${{ github.event.inputs.title }}" --body "${{ github.event.inputs.body }}"
