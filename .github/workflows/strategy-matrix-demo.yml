@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Setup JavaScript
         uses: actions/setup-node@v3.8.1
+        with:
+          node-version: ${{ matrix.node_version }}
 
       - name: Check node version
         run: node -v
