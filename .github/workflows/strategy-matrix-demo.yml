@@ -1,0 +1,21 @@
+name: Strategy matrix demo
+
+on:
+  workflow_dispatch:
+
+jobs:
+  matrix_job:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node_version:
+          - 16
+          - 18
+          - 20
+
+    steps:
+      - name: Setup JavaScript
+        uses: actions/setup-node@v3.8.1
+
+      - name: Check node version
+        run: node -v
