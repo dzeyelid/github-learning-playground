@@ -6,10 +6,16 @@ on:
 jobs:
   job_1:
     runs-on: ubuntu-latest
+    outputs:
+      greeting: ${{ steps.greeting.outputs.message }}
     steps:
       - run: echo $NEEDS_CONTEXT | jq
         env:
           NEEDS_CONTEXT: ${{ toJSON(needs) }}
+
+      - name: Output greeting
+        id: greeting
+        run: echo "message=hello" >> $GITHUB_OUTPUT
 
   job_2:
     runs-on: ubuntu-latest
