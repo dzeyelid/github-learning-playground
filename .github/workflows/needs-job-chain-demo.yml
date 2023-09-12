@@ -9,7 +9,7 @@ jobs:
     steps:
       - run: echo $NEEDS_CONTEXT | jq
         env:
-          NEEDS_CONTEXT: toJSON(needs)
+          NEEDS_CONTEXT: ${{ toJSON(needs) }}
 
   job_2:
     runs-on: ubuntu-latest
@@ -17,7 +17,7 @@ jobs:
     steps:
       - run: echo $NEEDS_CONTEXT | jq
         env:
-          NEEDS_CONTEXT: toJSON(needs)
+          NEEDS_CONTEXT: ${{ toJSON(needs) }}
 
   job_3:
     runs-on: ubuntu-latest
@@ -25,4 +25,4 @@ jobs:
     steps:
       - run: echo $NEEDS_CONTEXT | jq
         env:
-          NEEDS_CONTEXT: toJSON(needs)
+          NEEDS_CONTEXT: ${{ toJSON(needs) }}
