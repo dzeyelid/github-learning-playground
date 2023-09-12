@@ -7,16 +7,16 @@ jobs:
   job_1:
     runs-on: ubuntu-latest
     steps:
-      - run: echo ${{ fromJson(job) }} | jq
+      - run: echo ${{ toJSON(job) }} | jq
 
   job_2:
     runs-on: ubuntu-latest
     needs: job_1
     steps:
-      - run: echo ${{ fromJson(job) }} | jq
+      - run: echo ${{ toJSON(job) }} | jq
 
   job_3:
     runs-on: ubuntu-latest
     needs: job_1
     steps:
-      - run: echo ${{ fromJson(job) }} | jq
+      - run: echo ${{ toJSON(job) }} | jq
