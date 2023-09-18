@@ -1,0 +1,15 @@
+name: Output github context by a pull request event
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  output-context:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo ${GITHUB_CONTEXT} | jq
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
