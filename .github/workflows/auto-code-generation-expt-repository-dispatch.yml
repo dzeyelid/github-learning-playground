@@ -22,7 +22,7 @@ jobs:
           echo '::error::Invalid event request'
           exit 1
 
-      - uses: actions/github-script@v4.0.2
+      - uses: actions/github-script@v6.4.0
         id: release_tag
         with:
           result-encoding: string
@@ -42,7 +42,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Get latest release
         id: get-latest-release
-        uses: actions/github-script@v4.0.2
+        uses: actions/github-script@v6.4.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           result-encoding: string
