@@ -1,0 +1,10 @@
+name: Examine self-hosted runner
+
+on:
+  workflow_dispatch:
+
+jobs:
+  examine:
+    runs-on: self-hosted
+    steps:
+      - run: id
